@@ -1,0 +1,21 @@
+# Sobe SÓ o serviço de IA (para desenvolvimento isolado).
+# No projeto completo, copie o bloco "ai-service" para o docker-compose.yml do backend
+# (ver docs/integracao-backend.md) e use AI_SERVICE_URL=http://ai-service:5000/predict.
+services:
+  ai-service:
+    build: .
+    image: sima-ai-service:local
+    container_name: sima-ai-service
+    ports:
+      - "5000:5000"
+    environment:
+      VERSAO_MODELO: ${VERSAO_MODELO:-v1}
+      VALIDADE_PREVISAO_MIN: ${VALIDADE_PREVISAO_MIN:-30}
+      CACHE_CHUVA_TTL_MIN: ${CACHE_CHUVA_TTL_MIN:-15}
+      IDADE_MAX_CHUVA_MIN: ${IDADE_MAX_CHUVA_MIN:-60}
+      NIVEL_RISCO_COM_ACENTO: ${NIVEL_RISCO_COM_ACENTO:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      # Permite trocar o modelo sem rebuild (somente leitura)
+      - ./models:/app/models:ro
+    restart: unless-stopped

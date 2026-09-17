@@ -1,0 +1,15 @@
+# Só entra na imagem o que o serviço precisa: app/, src/, models/ e requirements-servico.txt
+.git
+.venv
+venv
+data
+notebooks
+reports
+tests
+docs
+scripts
+**/__pycache__
+**/*.pyc
+.env
+.pytest_cache
+.ruff_cache

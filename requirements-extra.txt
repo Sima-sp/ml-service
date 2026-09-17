@@ -1,0 +1,4 @@
+# Só para o experimento EXTRA com LSTM (dia 18, se houver folga).
+# CPU é suficiente para o tamanho do problema.
+-r requirements.txt
+torch>=2.3

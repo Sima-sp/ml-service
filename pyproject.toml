@@ -1,0 +1,23 @@
+[project]
+name = "sima-sp-ai-service"
+version = "0.1.0"
+description = "Serviço de previsão de alagamentos do SIMA-SP (TCC): coleta, dataset, treino e API FastAPI."
+requires-python = ">=3.11"
+readme = "README.md"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning:lightgbm.*",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501", "UP042"]  # (str, Enum) é intencional: serializa como texto no JSON

@@ -1,0 +1,37 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+*.egg-info/
+
+# --- Segredos (NUNCA versionar o .env real) ---
+.env
+
+# --- Dados: versionamos só a estrutura e os arquivos pequenos de referência ---
+data/raw/**
+!data/raw/**/
+!data/raw/**/.gitkeep
+data/interim/**
+!data/interim/.gitkeep
+data/processed/*.parquet
+data/processed/*_resumo.json
+# pontos.csv é pequeno e documenta a seleção: pode ser versionado.
+
+# --- Artefatos pesados ---
+# Os modelos v1 são pequenos (poucos MB) e o serviço precisa deles no build.
+# Se passarem de ~50 MB, usar Git LFS ou um release em vez do Git.
+models/*.joblib.tmp
+reports/*.png
+
+# --- Logs de execução (nohup, coletas longas) ---
+*.log
+nohup.out
+
+# --- Sistema ---
+.DS_Store
+.idea/
+.vscode/
