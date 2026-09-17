@@ -1,6 +1,6 @@
 # Serviço de IA do SIMA-SP — imagem de produção (só o necessário para servir).
-# Build:  docker build -t sima-ai-service .
-# Rodar:  docker run --rm -p 5000:5000 sima-ai-service
+# Build:  docker build -t sima-ml-service .
+# Rodar:  docker run --rm -p 5000:5000 sima-ml-service
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \

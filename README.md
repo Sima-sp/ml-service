@@ -86,12 +86,12 @@ validado com dados sintéticos e serviço rodando em Docker (`make docker`, `/he
 ## 3. Estrutura do repositório
 
 ```
-ai-service/
+ml-service/
 ├── README.md                  ← você está aqui
 ├── DATASET.md                 ← ficha do dataset (preencher após a coleta)
 ├── Makefile                   ← atalhos: make testar | sintetico | dataset | treinar | servir | docker
 ├── Dockerfile                 ← imagem enxuta do serviço (python:3.12-slim)
-├── docker-compose.yml         ← sobe só o ai-service (porta 5000)
+├── docker-compose.yml         ← sobe só o ml-service (porta 5000)
 ├── requirements.txt           ← ambiente completo (coleta, geo, notebooks, testes)
 ├── requirements-servico.txt   ← só o que a imagem de produção precisa
 ├── requirements-extra.txt     ← + PyTorch para a LSTM (extra)
@@ -171,8 +171,7 @@ ai-service/
 Requisitos: Python **3.11+** (3.12 recomendado), `make`, Docker (opcional).
 
 ```bash
-cd ai-service
-[ -f Makefile ] || mv Makefile.exemplo Makefile   # 1ª vez: o Makefile foi entregue com outro nome
+cd ml-service
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -U pip
@@ -484,7 +483,7 @@ teste é treinado em segundos com dados sintéticos. Os testes geoespaciais são
 
 ```bash
 make docker                        # docker compose up --build  → http://localhost:5000/health
-docker build -t sima-ai-service .  # só a imagem
+docker build -t sima-ml-service .  # só a imagem
 ```
 
 - A imagem usa `requirements-servico.txt` (sem geopandas/jupyter) e copia `src/`, `app/` e `models/`.

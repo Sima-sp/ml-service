@@ -1,11 +1,11 @@
 # Sobe SÓ o serviço de IA (para desenvolvimento isolado).
-# No projeto completo, copie o bloco "ai-service" para o docker-compose.yml do backend
-# (ver docs/integracao-backend.md) e use AI_SERVICE_URL=http://ai-service:5000/predict.
+# No projeto completo, copie o bloco "ml-service" para o docker-compose.yml do backend
+# (ver docs/integracao-backend.md) e use AI_SERVICE_URL=http://ml-service:5000/predict.
 services:
-  ai-service:
+  ml-service:
     build: .
-    image: sima-ai-service:local
-    container_name: sima-ai-service
+    image: sima-ml-service:local
+    container_name: sima-ml-service
     ports:
       - "5000:5000"
     environment:

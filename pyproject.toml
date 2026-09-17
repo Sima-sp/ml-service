@@ -1,5 +1,5 @@
 [project]
-name = "sima-sp-ai-service"
+name = "sima-sp-ml-service"
 version = "0.1.0"
 description = "Serviço de previsão de alagamentos do SIMA-SP (TCC): coleta, dataset, treino e API FastAPI."
 requires-python = ">=3.11"

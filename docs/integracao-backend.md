@@ -8,15 +8,15 @@
 ## 1. docker-compose do projeto
 
 ```yaml
-  ai-service:
-    build: ./ai-service
-    container_name: sima-ai-service
+  ml-service:
+    build: ./ml-service
+    container_name: sima-ml-service
     ports: ["5000:5000"]
     environment:
       VERSAO_MODELO: v1
       NIVEL_RISCO_COM_ACENTO: "false"
     volumes:
-      - ./ai-service/models:/app/models:ro
+      - ./ml-service/models:/app/models:ro
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=4)"]
       interval: 30s
@@ -25,10 +25,10 @@
   backend:
     environment:
       AI_ENABLED: "true"
-      AI_SERVICE_URL: http://ai-service:5000/predict
-      AI_SERVICE_BATCH_URL: http://ai-service:5000/predict/batch
+      AI_SERVICE_URL: http://ml-service:5000/predict
+      AI_SERVICE_BATCH_URL: http://ml-service:5000/predict/batch
     depends_on:
-      ai-service:
+      ml-service:
         condition: service_healthy
 ```
 

@@ -1,6 +1,6 @@
 # Roteiro da coleta de dados
 
-> **Onde rodar:** na máquina de desenvolvimento, dentro da pasta `ai-service` com o ambiente
+> **Onde rodar:** na máquina de desenvolvimento, dentro da pasta `ml-service` com o ambiente
 > virtual ativo. As fontes foram verificadas em 16/09/2026.
 
 ## Portão de decisão — respondido em 16/09/2026
