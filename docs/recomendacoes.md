@@ -154,9 +154,14 @@ Por padrão, só entram nos pontos e rótulos as precisões `coordenada_oficial`
 Na página real, muitas referências são **números** ("461", "ALTURA DO N. 66"). Para esses casos
 o geocodificador procura o endereço "via, número" (precisão `numero`).
 
-**Decisão pendente (dia 3–4):** olhar quantos registros do CGE sobram com boa precisão. Se forem
-poucos, aumentar o raio R ou aceitar `logradouro` só para vias curtas. O GeoSampa não resolve
-isso (R16).
+Na 1ª rodada, 50 % dos registros ficaram com boa precisão. A 2ª rodada acrescenta a precisão
+`logradouro_curto` (vias de até ~600 m, cujo centro fica dentro do raio R), normaliza as
+abreviações coladas do CGE e amplia a busca de avenidas longas (detalhes em
+`docs/coleta-dados.md`). O GeoSampa não resolve isso (R16).
+
+**Viés a declarar no TCC:** os descartes se concentram em avenidas longas sem cruzamento
+identificável (Marginais, Nações Unidas, Alcântara Machado). Esses corredores ficam
+sub-representados nos pontos escolhidos.
 
 ---
 

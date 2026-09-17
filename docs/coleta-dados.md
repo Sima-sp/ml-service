@@ -50,13 +50,29 @@ python -m src.pontos unificar         # imprime eventos por ano: cidade × Zona 
 python -m src.pontos selecionar       # data/processed/pontos.csv
 ```
 
-Formatos de referência do CGE já tratados:
-- via: "AV OTAVIANO ALVES DE LIMA" → **cruzamento**;
-- número: "461", "ALTURA DO N. 66", "ALTURA DO NÚMERO 196" → **numero**;
-- lugar: → **referencia**.
+Níveis de precisão (do melhor para o pior):
 
-Abreviações sem ponto (AV, R, AL, PC, PTE, CARD, CAP, STO, ENGA...) são expandidas. O que não
-for localizado com precisão fica como `logradouro` e sai dos pontos e dos rótulos.
+| Precisão | Como é obtida | Entra nos pontos/rótulos? |
+|---|---|---|
+| `numero` | "461", "ALTURA DO N. 66", "PROX AO NUMERO 1100" → endereço "via, número" | sim |
+| `cruzamento` | referência é uma via → ponto onde as duas se cruzam | sim |
+| `referencia` | referência é um lugar a até 1 km da via | sim |
+| `logradouro_curto` | via inteira com até ~600 m (o centro fica a ≤ 300 m de qualquer ponto dela) | sim |
+| `logradouro` | centro de uma via longa — posição sem valor | não |
+| `falhou` | via não encontrada | não |
+
+Tratamentos aplicados aos nomes (montados a partir dos endereços reais que falharam):
+- abreviações com e sem ponto, inclusive coladas: `AV CD.DE FRONTIN`, `AV NSRA.DO O`,
+  `R. BR. DO. BANANAL`, `TN JORN ...`, `ES ...`, `VEL ...`, `PÇ. ...`;
+- sufixos de pista: `MARGINAL TIETE CBAS CENTRAL` → `MARGINAL TIETE`;
+- nomes duplos: `PTE DA CASA VERDE-JORN.WALTER ABRAHAO` → tenta cada metade;
+- variantes sem títulos e iniciais (`Ponte ROSSI ZUCCOLO`), aceitas só se cruzarem a outra via;
+- avenidas longas vêm cortadas em 10 trechos: sem cruzamento, a busca é refeita com 40;
+- prefixos da referência: `ALTURA DO`, `PROX AO`, `100M ANTES DA`...
+
+Resultado da 1ª rodada (17/09/2026, 12.621 registros): cruzamento 5.883, logradouro 5.283,
+falhou 977, numero 400, referencia 78 → 50 % aproveitáveis. A 2ª rodada, com os tratamentos
+acima, aproveita pelo menos 59 % só com o cache (estimativa antes das ~3.000 consultas novas).
 
 ## Passo 4 — chuva e dataset
 

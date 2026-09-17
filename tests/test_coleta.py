@@ -324,3 +324,105 @@ def test_geocodificar_registro_aceita_nan(tmp_path, monkeypatch):
     monkeypatch.setattr(geo, "buscar", lambda consulta, limite=10: [])
     assert geo.geocodificar_registro("AV X", float("nan"), float("nan")) == (None, None, "falhou")
     assert geo.geocodificar_registro(float("nan"), "461") == (None, None, "falhou")
+
+
+@pytest.mark.parametrize("texto,primeiro", [
+    ("AV CD.DE FRONTIN", "Avenida Conde DE FRONTIN"),
+    ("AV MARQ.DE SAO VICENTE", "Avenida Marquês DE SAO VICENTE"),
+    ("AV NSRA.DO O", "Avenida Nossa Senhora DO O"),
+    ("AV N.SRA. DO SABARA", "Avenida Nossa Senhora DO SABARA"),
+    ("R. BR. DO. BANANAL", "Rua Barão DO BANANAL"),
+    ("R PDE VIEGAS DE MENEZES", "Rua Padre VIEGAS DE MENEZES"),
+    ("TN JORN FERNANDO VIEIRA DE MELLO", "Túnel Jornalista FERNANDO VIEIRA DE MELLO"),
+    ("ES DE ITAPECERICA", "Estrada DE ITAPECERICA"),
+    ("PÇ. DA BANDEIRA", "Praça DA BANDEIRA"),
+    ("*AV. ARICANDUVA", "Avenida ARICANDUVA"),
+])
+def test_normalizacao_dos_nomes_reais(texto, primeiro):
+    from src.geo import candidatos_via
+
+    assert candidatos_via(texto)[0] == primeiro
+
+
+def test_variantes_de_nomes():
+    from src.geo import candidatos_via
+
+    assert "MARGINAL TIETE" in candidatos_via("MARGINAL TIETE CBAS CENTRAL")
+    assert "MARGINAL TIETE" in candidatos_via("MARGINAL TIETE - EXPRESSA")
+    ponte = candidatos_via("PTE DA CASA VERDE-JORN.WALTER ABRAHAO", frouxo=True)
+    assert "Ponte DA CASA VERDE" in ponte and "Ponte WALTER ABRAHAO" in ponte
+    assert "Ponte ROSSI ZUCCOLO" in candidatos_via("PTE ENG ROBERTO ROSSI ZUCCOLO", frouxo=True)
+    # nomes com número não perdem o número nas variantes
+    assert candidatos_via("AVENIDA 9 DE JULHO", frouxo=True) == ["AVENIDA 9 DE JULHO"]
+    # "PAN - AMERICANA" é um nome só: não vira "Praça PAN"
+    assert "Praça PAN" not in candidatos_via("PC PAN - AMERICANA", frouxo=True)
+
+
+@pytest.mark.parametrize("texto,esperado", [
+    ("ALTURA DO VD GUADALAJARA", "VD GUADALAJARA"),
+    ("PROX AO NUMERO 1100", "NUMERO 1100"),
+    ("100M ANTES DA R JACURICÍ", "R JACURICÍ"),
+    ("ALTURA DO N. 66", "ALTURA DO N. 66"),
+    ("AV OTAVIANO ALVES DE LIMA", "AV OTAVIANO ALVES DE LIMA"),
+])
+def test_limpar_referencia(texto, esperado):
+    from src.geo import limpar_referencia
+
+    assert limpar_referencia(texto) == esperado
+
+
+def _via(lon_ini, lon_fim, lat=-23.5):
+    return {"lat": str(lat), "lon": str((lon_ini + lon_fim) / 2), "category": "highway", "addresstype": "road",
+            "geojson": {"type": "LineString", "coordinates": [[lon_ini, lat], [lon_fim, lat]]}}
+
+
+def test_via_curta_vira_logradouro_curto(tmp_path, monkeypatch):
+    pytest.importorskip("shapely")
+    from src.geo import Geocodificador
+
+    respostas = {
+        "Rua CURTA, São Paulo, SP": [_via(-46.600, -46.597)],  # ~300 m
+        "Avenida LONGA, São Paulo, SP": [_via(-46.60, -46.58)],  # ~2 km
+        "Rua CORTADA, São Paulo, SP": [_via(-46.600 + i * 1e-4, -46.5999 + i * 1e-4) for i in range(10)],
+    }
+    geo = Geocodificador(arquivo_cache=tmp_path / "c.json")
+    monkeypatch.setattr(geo, "buscar", lambda consulta, limite=10: respostas.get(consulta, []))
+    lat, lon, precisao = geo.geocodificar_registro("R CURTA", None)
+    assert precisao == "logradouro_curto" and abs(lon + 46.5985) < 1e-6
+    assert geo.geocodificar_registro("AV LONGA", None)[2] == "logradouro"
+    # veio cortada no limite de 10 trechos: pode ser maior do que parece
+    assert geo.geocodificar_registro("R CORTADA", None)[2] == "logradouro"
+
+
+def test_cruzamento_amplia_busca_quando_via_veio_cortada(tmp_path, monkeypatch):
+    pytest.importorskip("shapely")
+    from src.geo import Geocodificador
+
+    trechos = [_via(-46.70 + i * 0.001, -46.699 + i * 0.001) for i in range(10)]  # longe do viaduto
+    viaduto = {"lat": "-23.5", "lon": "-46.60", "category": "highway", "addresstype": "road",
+               "geojson": {"type": "LineString", "coordinates": [[-46.60, -23.501], [-46.60, -23.499]]}}
+    pedidos = []
+
+    def buscar(consulta, limite=10):
+        pedidos.append((consulta, limite))
+        if consulta.startswith("Avenida GRANDE"):
+            return trechos + ([_via(-46.601, -46.599)] if limite == 40 else [])
+        if consulta.startswith("Viaduto X"):
+            return [viaduto]
+        return []
+
+    geo = Geocodificador(arquivo_cache=tmp_path / "c.json")
+    monkeypatch.setattr(geo, "buscar", buscar)
+    lat, lon, precisao = geo.geocodificar_registro("AV GRANDE", "VD X")
+    assert precisao == "cruzamento" and abs(lon + 46.60) < 1e-6
+    assert ("Avenida GRANDE, São Paulo, SP", 40) in pedidos
+
+
+def test_cache_separa_limite_ampliado(tmp_path):
+    from src.geo import Geocodificador
+
+    geo = Geocodificador(arquivo_cache=tmp_path / "c.json")
+    geo.cache["Rua A, São Paulo, SP"] = [{"x": 1}]
+    geo.cache["Rua A, São Paulo, SP|limite=40"] = [{"x": 1}, {"x": 2}]
+    assert len(geo.buscar("Rua A, São Paulo, SP")) == 1
+    assert len(geo.buscar("Rua A, São Paulo, SP", limite=40)) == 2

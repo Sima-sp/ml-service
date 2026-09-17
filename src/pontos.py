@@ -45,7 +45,7 @@ from src.geo import agrupar_dbscan, dentro_de_sp, zona_da_subprefeitura
 log = logging.getLogger(__name__)
 
 ARQ_EVENTOS_CGE_GEO = DIR_INTERIM / "eventos_cge_geocodificados.parquet"
-PRECISOES_ACEITAS = ("coordenada_oficial", "numero", "cruzamento", "referencia")
+PRECISOES_ACEITAS = ("coordenada_oficial", "numero", "cruzamento", "referencia", "logradouro_curto")
 COLUNAS_EVENTOS = [
     "evento_id", "fonte", "inicio_utc", "fim_utc", "lat", "lon", "precisao_geocod",
     "logradouro", "bairro", "subprefeitura", "transitavel", "hora_conhecida", "tipo_ocorrencia",
