@@ -1,0 +1,11 @@
+{
+  "limiares": {
+    "MEDIO": 0.15,
+    "ALTO": 0.4,
+    "CRITICO": 0.7
+  },
+  "estrategia": "fixos",
+  "diagnostico": {
+    "estrategia": "fixos do briefing"
+  }
+}

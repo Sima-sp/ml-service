@@ -108,3 +108,20 @@ def test_orcamento_de_alertas_limita_modelo_fraco():
     assert (p >= limiares["ALTO"]).mean() <= 0.0101
     assert (p >= limiares["MEDIO"]).mean() <= 0.0501
     assert diag["ALTO"]["limitado_por"] == "orcamento_de_alertas"
+
+
+def test_orcamento_respeitado_com_degraus_da_isotonica():
+    """Probabilidades em degraus (isotônica) não podem estourar o orçamento de alertas."""
+    import numpy as np
+
+    from src.calibracao import escolher_limiares, piso_orcamento
+
+    rng = np.random.default_rng(0)
+    # 90 % num degrau baixo, 8 % num degrau médio, 2 % em valores altos distintos
+    p = np.concatenate([np.full(9000, 0.001), np.full(800, 0.003), rng.uniform(0.01, 0.3, 200)])
+    y = (rng.random(len(p)) < p * 5).astype(int)
+    assert (p >= piso_orcamento(p, 0.05)).mean() <= 0.05
+    assert (p >= piso_orcamento(p, 0.10)).mean() <= 0.10
+    limiares, diag = escolher_limiares(y, p)
+    assert diag["MEDIO"]["fracao_horas"] <= 0.05
+    assert diag["ALTO"]["fracao_horas"] <= 0.01

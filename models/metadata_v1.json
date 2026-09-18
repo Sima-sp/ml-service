@@ -1,0 +1,271 @@
+{
+  "treinado_em": "2026-09-17T13:23:07.592621+00:00",
+  "dataset": "v1",
+  "fonte_chuva": "arquivo",
+  "periodo": {
+    "inicio": "2017-01-01",
+    "fim": "2025-12-31"
+  },
+  "raio_rotulo_m": 300,
+  "janela_horas": 3,
+  "divisao": {
+    "treino_ate": 2022,
+    "validacao": [
+      2023
+    ],
+    "teste": [
+      2024,
+      2025
+    ]
+  },
+  "calibracao": {
+    "metodo": "isotonica",
+    "metodo_pedido": "auto",
+    "n_positivos_calibracao": 1054
+  },
+  "metricas_validacao": {
+    "geral": {
+      "probabilistico": {
+        "n": 1199399,
+        "n_positivos": 1054,
+        "prevalencia": 0.000879,
+        "pr_auc": 0.0227,
+        "roc_auc": 0.9028,
+        "brier": 0.000866,
+        "brier_referencia": 0.000878
+      },
+      "por_nivel": {
+        ">=MEDIO": {
+          "precisao": 0.2121,
+          "recall": 0.0066,
+          "f1": 0.0129,
+          "fracao_horas_em_alerta": 2.8e-05
+        },
+        ">=ALTO": {
+          "precisao": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fracao_horas_em_alerta": 0.0
+        },
+        "CRITICO": {
+          "precisao": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fracao_horas_em_alerta": 0.0
+        }
+      },
+      "por_evento": {
+        "nivel_minimo": "ALTO",
+        "eventos": 335,
+        "eventos_detectados": 0,
+        "recall_eventos": 0.0,
+        "antecedencia_media_h": null,
+        "ponto_dias": 50005,
+        "ponto_dias_com_alerta": 0,
+        "ponto_dias_alarme_falso": 0,
+        "taxa_alarme_falso": null
+      }
+    },
+    "zona_norte": {
+      "probabilistico": {
+        "n": 481710,
+        "n_positivos": 190,
+        "prevalencia": 0.000394,
+        "pr_auc": 0.0212,
+        "roc_auc": 0.8995,
+        "brier": 0.000389,
+        "brier_referencia": 0.000394
+      },
+      "por_nivel": {
+        ">=MEDIO": {
+          "precisao": 0.125,
+          "recall": 0.0053,
+          "f1": 0.0101,
+          "fracao_horas_em_alerta": 1.7e-05
+        },
+        ">=ALTO": {
+          "precisao": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fracao_horas_em_alerta": 0.0
+        },
+        "CRITICO": {
+          "precisao": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fracao_horas_em_alerta": 0.0
+        }
+      },
+      "por_evento": {
+        "nivel_minimo": "ALTO",
+        "eventos": 63,
+        "eventos_detectados": 0,
+        "recall_eventos": 0.0,
+        "antecedencia_media_h": null,
+        "ponto_dias": 20075,
+        "ponto_dias_com_alerta": 0,
+        "ponto_dias_alarme_falso": 0,
+        "taxa_alarme_falso": null
+      }
+    }
+  },
+  "metricas_teste": {
+    "geral": {
+      "probabilistico": {
+        "n": 2402184,
+        "n_positivos": 1472,
+        "prevalencia": 0.000613,
+        "pr_auc": 0.0104,
+        "roc_auc": 0.9324,
+        "brier": 0.000612,
+        "brier_referencia": 0.000612
+      },
+      "por_nivel": {
+        ">=MEDIO": {
+          "precisao": 0.0323,
+          "recall": 0.0007,
+          "f1": 0.0013,
+          "fracao_horas_em_alerta": 1.3e-05
+        },
+        ">=ALTO": {
+          "precisao": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fracao_horas_em_alerta": 0.0
+        },
+        "CRITICO": {
+          "precisao": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fracao_horas_em_alerta": 0.0
+        }
+      },
+      "por_evento": {
+        "nivel_minimo": "ALTO",
+        "eventos": 483,
+        "eventos_detectados": 0,
+        "recall_eventos": 0.0,
+        "antecedencia_media_h": null,
+        "ponto_dias": 100147,
+        "ponto_dias_com_alerta": 0,
+        "ponto_dias_alarme_falso": 0,
+        "taxa_alarme_falso": null
+      }
+    },
+    "zona_norte": {
+      "probabilistico": {
+        "n": 964469,
+        "n_positivos": 394,
+        "prevalencia": 0.000409,
+        "pr_auc": 0.0162,
+        "roc_auc": 0.9454,
+        "brier": 0.000405,
+        "brier_referencia": 0.000408
+      },
+      "por_nivel": {
+        ">=MEDIO": {
+          "precisao": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fracao_horas_em_alerta": 6e-06
+        },
+        ">=ALTO": {
+          "precisao": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fracao_horas_em_alerta": 0.0
+        },
+        "CRITICO": {
+          "precisao": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fracao_horas_em_alerta": 0.0
+        }
+      },
+      "por_evento": {
+        "nivel_minimo": "ALTO",
+        "eventos": 133,
+        "eventos_detectados": 0,
+        "recall_eventos": 0.0,
+        "antecedencia_media_h": null,
+        "ponto_dias": 40205,
+        "ponto_dias_com_alerta": 0,
+        "ponto_dias_alarme_falso": 0,
+        "taxa_alarme_falso": null
+      }
+    }
+  },
+  "contagens": {
+    "treino": {
+      "linhas": 4480201,
+      "positivos": 6540,
+      "prevalencia_amostra": 0.00146,
+      "prevalencia_real_ponderada": 0.00091,
+      "eventos_distintos": 2120,
+      "anos": [
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "linhas_zona_norte": 1805605,
+      "positivos_zona_norte": 1474
+    },
+    "validacao": {
+      "linhas": 1199399,
+      "positivos": 1054,
+      "prevalencia_amostra": 0.000879,
+      "prevalencia_real_ponderada": 0.000879,
+      "eventos_distintos": 335,
+      "anos": [
+        2023
+      ],
+      "linhas_zona_norte": 481710,
+      "positivos_zona_norte": 190
+    },
+    "teste": {
+      "linhas": 2402184,
+      "positivos": 1472,
+      "prevalencia_amostra": 0.000613,
+      "prevalencia_real_ponderada": 0.000613,
+      "eventos_distintos": 483,
+      "anos": [
+        2024,
+        2025
+      ],
+      "linhas_zona_norte": 964469,
+      "positivos_zona_norte": 394
+    }
+  },
+  "lightgbm_melhor_iteracao": 19,
+  "versao": "v1",
+  "nome_modelo": "lightgbm",
+  "features": [
+    "chuva_1h",
+    "chuva_3h",
+    "chuva_6h",
+    "chuva_24h",
+    "chuva_72h",
+    "max_chuva_1h_24h",
+    "horas_desde_ultima_chuva",
+    "hora_dia",
+    "mes",
+    "dia_semana",
+    "estacao_chuvosa",
+    "lat",
+    "lon",
+    "elevacao",
+    "dist_corrego_m",
+    "zona",
+    "freq_hist_alagamento"
+  ],
+  "bibliotecas": {
+    "python": "3.12.3",
+    "scikit-learn": "1.9.1",
+    "pandas": "3.0.5",
+    "numpy": "2.5.3",
+    "lightgbm": "4.7.0"
+  }
+}

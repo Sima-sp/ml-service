@@ -318,8 +318,9 @@ def texto_ou_none(valor) -> str | None:
 
 def bairro_entre_parenteses(texto: str | None) -> str | None:
     """"R DO PARAISO (VILA MARIANA)" -> "VILA MARIANA"."""
-    m = RE_PARENTESES.search(texto or "")
-    return m.group(1).strip() if m else None
+    texto = texto_ou_none(texto)
+    m = RE_PARENTESES.search(texto) if texto else None
+    return (m.group(1).strip() or None) if m else None
 
 
 def _geometria(resultado: dict):

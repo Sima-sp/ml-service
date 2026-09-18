@@ -101,3 +101,18 @@ o nível e tem teto em CRITICO. A probabilidade não muda. A regra é validada c
   das bibliotecas.
 - Todo dado bruto fica em `data/raw` com cache; o pipeline pode ser refeito do zero com os
   comandos do README.
+
+## 11. Resultados do `v1` (17/09/2026)
+
+Resumo em `docs/recomendacoes.md` (R18). Detalhes em `reports/comparacao_v1.md` e
+`reports/metricas_v1.json`.
+
+- LightGBM no teste (2024–25): PR-AUC 0,010 (prevalência 0,061 %), ROC-AUC 0,93; em ALTO,
+  precisão 1,6 % e recall 22 %; 31 % dos eventos avisados com 2,4 h de antecedência.
+- Zona Norte: ROC-AUC 0,95; 29 % dos eventos avisados com 2,6 h.
+- Limiares por metas: MEDIO 0,0041, ALTO 0,0119, CRITICO 0,25.
+- Features mais importantes: `chuva_3h` (34 %), `freq_hist_alagamento` (13 %), `mes` (12 %),
+  `hora_dia` (8 %), `chuva_6h` (7 %).
+- A calibração isotônica devolve poucos valores distintos (69 no teste): várias horas
+  compartilham a mesma probabilidade. O orçamento de alertas trata esses empates
+  (`calibracao.piso_orcamento`).

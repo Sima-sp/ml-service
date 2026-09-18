@@ -1,0 +1,547 @@
+{
+  "validacao": {
+    "baseline_regras": {
+      "geral": {
+        "probabilistico": {
+          "n": 1199399,
+          "n_positivos": 1054,
+          "prevalencia": 0.000879,
+          "pr_auc": 0.0026,
+          "roc_auc": 0.5932
+        },
+        "por_nivel": {
+          ">=MEDIO": {
+            "precisao": 0.0088,
+            "recall": 0.2068,
+            "f1": 0.0169,
+            "fracao_horas_em_alerta": 0.020584
+          },
+          ">=ALTO": {
+            "precisao": 0.0167,
+            "recall": 0.0066,
+            "f1": 0.0095,
+            "fracao_horas_em_alerta": 0.000349
+          },
+          "CRITICO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 4e-06
+          }
+        },
+        "por_evento": {
+          "nivel_minimo": "ALTO",
+          "eventos": 335,
+          "eventos_detectados": 7,
+          "recall_eventos": 0.0209,
+          "antecedencia_media_h": 2.43,
+          "ponto_dias": 50005,
+          "ponto_dias_com_alerta": 257,
+          "ponto_dias_alarme_falso": 248,
+          "taxa_alarme_falso": 0.965
+        }
+      },
+      "zona_norte": {
+        "probabilistico": {
+          "n": 481710,
+          "n_positivos": 190,
+          "prevalencia": 0.000394,
+          "pr_auc": 0.0008,
+          "roc_auc": 0.5656
+        },
+        "por_nivel": {
+          ">=MEDIO": {
+            "precisao": 0.0028,
+            "recall": 0.1526,
+            "f1": 0.0055,
+            "fracao_horas_em_alerta": 0.021463
+          },
+          ">=ALTO": {
+            "precisao": 0.0085,
+            "recall": 0.0053,
+            "f1": 0.0065,
+            "fracao_horas_em_alerta": 0.000245
+          },
+          "CRITICO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          }
+        },
+        "por_evento": {
+          "nivel_minimo": "ALTO",
+          "eventos": 63,
+          "eventos_detectados": 1,
+          "recall_eventos": 0.0159,
+          "antecedencia_media_h": 2.0,
+          "ponto_dias": 20075,
+          "ponto_dias_com_alerta": 76,
+          "ponto_dias_alarme_falso": 75,
+          "taxa_alarme_falso": 0.9868
+        }
+      }
+    },
+    "logistica": {
+      "geral": {
+        "probabilistico": {
+          "n": 1199399,
+          "n_positivos": 1054,
+          "prevalencia": 0.000879,
+          "pr_auc": 0.0187,
+          "roc_auc": 0.8872,
+          "brier": 0.000868,
+          "brier_referencia": 0.000878
+        },
+        "por_nivel": {
+          ">=MEDIO": {
+            "precisao": 0.2609,
+            "recall": 0.0057,
+            "f1": 0.0111,
+            "fracao_horas_em_alerta": 1.9e-05
+          },
+          ">=ALTO": {
+            "precisao": 0.5,
+            "recall": 0.0009,
+            "f1": 0.0019,
+            "fracao_horas_em_alerta": 2e-06
+          },
+          "CRITICO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          }
+        },
+        "por_evento": {
+          "nivel_minimo": "ALTO",
+          "eventos": 335,
+          "eventos_detectados": 1,
+          "recall_eventos": 0.003,
+          "antecedencia_media_h": 2.0,
+          "ponto_dias": 50005,
+          "ponto_dias_com_alerta": 2,
+          "ponto_dias_alarme_falso": 1,
+          "taxa_alarme_falso": 0.5
+        }
+      },
+      "zona_norte": {
+        "probabilistico": {
+          "n": 481710,
+          "n_positivos": 190,
+          "prevalencia": 0.000394,
+          "pr_auc": 0.0135,
+          "roc_auc": 0.8762,
+          "brier": 0.000392,
+          "brier_referencia": 0.000394
+        },
+        "por_nivel": {
+          ">=MEDIO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          },
+          ">=ALTO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          },
+          "CRITICO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          }
+        },
+        "por_evento": {
+          "nivel_minimo": "ALTO",
+          "eventos": 63,
+          "eventos_detectados": 0,
+          "recall_eventos": 0.0,
+          "antecedencia_media_h": null,
+          "ponto_dias": 20075,
+          "ponto_dias_com_alerta": 0,
+          "ponto_dias_alarme_falso": 0,
+          "taxa_alarme_falso": null
+        }
+      }
+    },
+    "lightgbm": {
+      "geral": {
+        "probabilistico": {
+          "n": 1199399,
+          "n_positivos": 1054,
+          "prevalencia": 0.000879,
+          "pr_auc": 0.0227,
+          "roc_auc": 0.9028,
+          "brier": 0.000866,
+          "brier_referencia": 0.000878
+        },
+        "por_nivel": {
+          ">=MEDIO": {
+            "precisao": 0.2121,
+            "recall": 0.0066,
+            "f1": 0.0129,
+            "fracao_horas_em_alerta": 2.8e-05
+          },
+          ">=ALTO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          },
+          "CRITICO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          }
+        },
+        "por_evento": {
+          "nivel_minimo": "ALTO",
+          "eventos": 335,
+          "eventos_detectados": 0,
+          "recall_eventos": 0.0,
+          "antecedencia_media_h": null,
+          "ponto_dias": 50005,
+          "ponto_dias_com_alerta": 0,
+          "ponto_dias_alarme_falso": 0,
+          "taxa_alarme_falso": null
+        }
+      },
+      "zona_norte": {
+        "probabilistico": {
+          "n": 481710,
+          "n_positivos": 190,
+          "prevalencia": 0.000394,
+          "pr_auc": 0.0212,
+          "roc_auc": 0.8995,
+          "brier": 0.000389,
+          "brier_referencia": 0.000394
+        },
+        "por_nivel": {
+          ">=MEDIO": {
+            "precisao": 0.125,
+            "recall": 0.0053,
+            "f1": 0.0101,
+            "fracao_horas_em_alerta": 1.7e-05
+          },
+          ">=ALTO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          },
+          "CRITICO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          }
+        },
+        "por_evento": {
+          "nivel_minimo": "ALTO",
+          "eventos": 63,
+          "eventos_detectados": 0,
+          "recall_eventos": 0.0,
+          "antecedencia_media_h": null,
+          "ponto_dias": 20075,
+          "ponto_dias_com_alerta": 0,
+          "ponto_dias_alarme_falso": 0,
+          "taxa_alarme_falso": null
+        }
+      }
+    }
+  },
+  "teste": {
+    "baseline_regras": {
+      "geral": {
+        "probabilistico": {
+          "n": 2402184,
+          "n_positivos": 1472,
+          "prevalencia": 0.000613,
+          "pr_auc": 0.0017,
+          "roc_auc": 0.5892
+        },
+        "por_nivel": {
+          ">=MEDIO": {
+            "precisao": 0.0061,
+            "recall": 0.1984,
+            "f1": 0.0118,
+            "fracao_horas_em_alerta": 0.02006
+          },
+          ">=ALTO": {
+            "precisao": 0.0019,
+            "recall": 0.0027,
+            "f1": 0.0022,
+            "fracao_horas_em_alerta": 0.00087
+          },
+          "CRITICO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          }
+        },
+        "por_evento": {
+          "nivel_minimo": "ALTO",
+          "eventos": 483,
+          "eventos_detectados": 2,
+          "recall_eventos": 0.0041,
+          "antecedencia_media_h": 2.0,
+          "ponto_dias": 100147,
+          "ponto_dias_com_alerta": 450,
+          "ponto_dias_alarme_falso": 439,
+          "taxa_alarme_falso": 0.9756
+        }
+      },
+      "zona_norte": {
+        "probabilistico": {
+          "n": 964469,
+          "n_positivos": 394,
+          "prevalencia": 0.000409,
+          "pr_auc": 0.001,
+          "roc_auc": 0.5838
+        },
+        "por_nivel": {
+          ">=MEDIO": {
+            "precisao": 0.0038,
+            "recall": 0.1878,
+            "f1": 0.0075,
+            "fracao_horas_em_alerta": 0.020068
+          },
+          ">=ALTO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.001025
+          },
+          "CRITICO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          }
+        },
+        "por_evento": {
+          "nivel_minimo": "ALTO",
+          "eventos": 133,
+          "eventos_detectados": 0,
+          "recall_eventos": 0.0,
+          "antecedencia_media_h": null,
+          "ponto_dias": 40205,
+          "ponto_dias_com_alerta": 147,
+          "ponto_dias_alarme_falso": 147,
+          "taxa_alarme_falso": 1.0
+        }
+      }
+    },
+    "logistica": {
+      "geral": {
+        "probabilistico": {
+          "n": 2402184,
+          "n_positivos": 1472,
+          "prevalencia": 0.000613,
+          "pr_auc": 0.0111,
+          "roc_auc": 0.9219,
+          "brier": 0.00061,
+          "brier_referencia": 0.000612
+        },
+        "por_nivel": {
+          ">=MEDIO": {
+            "precisao": 0.0741,
+            "recall": 0.0014,
+            "f1": 0.0027,
+            "fracao_horas_em_alerta": 1.1e-05
+          },
+          ">=ALTO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          },
+          "CRITICO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          }
+        },
+        "por_evento": {
+          "nivel_minimo": "ALTO",
+          "eventos": 483,
+          "eventos_detectados": 0,
+          "recall_eventos": 0.0,
+          "antecedencia_media_h": null,
+          "ponto_dias": 100147,
+          "ponto_dias_com_alerta": 1,
+          "ponto_dias_alarme_falso": 1,
+          "taxa_alarme_falso": 1.0
+        }
+      },
+      "zona_norte": {
+        "probabilistico": {
+          "n": 964469,
+          "n_positivos": 394,
+          "prevalencia": 0.000409,
+          "pr_auc": 0.0122,
+          "roc_auc": 0.9298,
+          "brier": 0.000406,
+          "brier_referencia": 0.000408
+        },
+        "por_nivel": {
+          ">=MEDIO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          },
+          ">=ALTO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          },
+          "CRITICO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          }
+        },
+        "por_evento": {
+          "nivel_minimo": "ALTO",
+          "eventos": 133,
+          "eventos_detectados": 0,
+          "recall_eventos": 0.0,
+          "antecedencia_media_h": null,
+          "ponto_dias": 40205,
+          "ponto_dias_com_alerta": 0,
+          "ponto_dias_alarme_falso": 0,
+          "taxa_alarme_falso": null
+        }
+      }
+    },
+    "lightgbm": {
+      "geral": {
+        "probabilistico": {
+          "n": 2402184,
+          "n_positivos": 1472,
+          "prevalencia": 0.000613,
+          "pr_auc": 0.0104,
+          "roc_auc": 0.9324,
+          "brier": 0.000612,
+          "brier_referencia": 0.000612
+        },
+        "por_nivel": {
+          ">=MEDIO": {
+            "precisao": 0.0323,
+            "recall": 0.0007,
+            "f1": 0.0013,
+            "fracao_horas_em_alerta": 1.3e-05
+          },
+          ">=ALTO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          },
+          "CRITICO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          }
+        },
+        "por_evento": {
+          "nivel_minimo": "ALTO",
+          "eventos": 483,
+          "eventos_detectados": 0,
+          "recall_eventos": 0.0,
+          "antecedencia_media_h": null,
+          "ponto_dias": 100147,
+          "ponto_dias_com_alerta": 0,
+          "ponto_dias_alarme_falso": 0,
+          "taxa_alarme_falso": null
+        }
+      },
+      "zona_norte": {
+        "probabilistico": {
+          "n": 964469,
+          "n_positivos": 394,
+          "prevalencia": 0.000409,
+          "pr_auc": 0.0162,
+          "roc_auc": 0.9454,
+          "brier": 0.000405,
+          "brier_referencia": 0.000408
+        },
+        "por_nivel": {
+          ">=MEDIO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 6e-06
+          },
+          ">=ALTO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          },
+          "CRITICO": {
+            "precisao": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fracao_horas_em_alerta": 0.0
+          }
+        },
+        "por_evento": {
+          "nivel_minimo": "ALTO",
+          "eventos": 133,
+          "eventos_detectados": 0,
+          "recall_eventos": 0.0,
+          "antecedencia_media_h": null,
+          "ponto_dias": 40205,
+          "ponto_dias_com_alerta": 0,
+          "ponto_dias_alarme_falso": 0,
+          "taxa_alarme_falso": null
+        }
+      }
+    }
+  },
+  "limiares": {
+    "logistica": {
+      "MEDIO": 0.15,
+      "ALTO": 0.4,
+      "CRITICO": 0.7
+    },
+    "lightgbm": {
+      "MEDIO": 0.15,
+      "ALTO": 0.4,
+      "CRITICO": 0.7
+    }
+  },
+  "diagnostico_limiares": {
+    "logistica": {
+      "estrategia": "fixos do briefing"
+    },
+    "lightgbm": {
+      "estrategia": "fixos do briefing"
+    }
+  },
+  "calibracao": {
+    "logistica": {
+      "metodo": "isotonica",
+      "metodo_pedido": "auto",
+      "n_positivos_calibracao": 1054
+    },
+    "lightgbm": {
+      "metodo": "isotonica",
+      "metodo_pedido": "auto",
+      "n_positivos_calibracao": 1054
+    }
+  },
+  "lightgbm_melhor_iteracao": 19
+}

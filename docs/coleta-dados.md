@@ -71,8 +71,28 @@ Tratamentos aplicados aos nomes (montados a partir dos endereços reais que falh
 - prefixos da referência: `ALTURA DO`, `PROX AO`, `100M ANTES DA`...
 
 Resultado da 1ª rodada (17/09/2026, 12.621 registros): cruzamento 5.883, logradouro 5.283,
-falhou 977, numero 400, referencia 78 → 50 % aproveitáveis. A 2ª rodada, com os tratamentos
-acima, aproveita pelo menos 59 % só com o cache (estimativa antes das ~3.000 consultas novas).
+falhou 977, numero 400, referencia 78 → 50 % aproveitáveis.
+
+Resultado da 2ª rodada (17/09/2026, com os tratamentos acima): cruzamento 8.212,
+logradouro 2.743, logradouro_curto 833, numero 448, falhou 350, referencia 35 →
+9.528 aproveitáveis (**75 %**). Os 22 % em `logradouro` são quase todos avenidas longas sem
+cruzamento (Marginais, Nações Unidas...), que ficam sub-representadas nos rótulos (R11).
+
+### Escolha dos pontos (17/09/2026)
+
+Simulação com os eventos da 2ª rodada, contando os alagamentos a até 300 m de algum ponto:
+
+| Agrupamento | Mín. eventos | N cidade | Pontos (ZN) | Treino | Validação | Teste | ZN treino/val/teste |
+|---|---|---|---|---|---|---|---|
+| 150 m | 3 | 100 | 141 (58) | 2.552 | 375 | 534 | 562 / 71 / 153 |
+| **200 m** | **3** | **100** | **138 (55)** | **2.432** | **374** | **548** | **555 / 69 / 149** |
+| 200 m | 5 | 100 | 120 (37) | 2.436 | 368 | 543 | 513 / 65 / 144 |
+| 300 m | 3 | 100 | 124 (43) | 1.960 | 340 | 438 | 406 / 46 / 91 |
+| 200 m | 3 | 150 | 180 (55) | 2.668 | 416 | 597 | 555 / 69 / 149 |
+
+Decisão: manter o padrão (agrupamento 200 m, mínimo 3 eventos, 100 da cidade + todos da
+Zona Norte, rótulo a 300 m). São 138 pontos em 27 células de chuva. Agrupar a 300 m junta
+pontos distintos e perde eventos; 150 pontos da cidade quase não acrescentam validação/teste.
 
 ## Passo 4 — chuva e dataset
 

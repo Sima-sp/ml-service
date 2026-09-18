@@ -72,6 +72,26 @@ class Calibrador:
                 "n_positivos_calibracao": getattr(self, "n_positivos", None)}
 
 
+def piso_orcamento(probabilidades, fracao_max: float) -> float:
+    """Menor limiar que deixa no máximo ``fracao_max`` das horas em ``p >= limiar``.
+
+    A calibração isotônica devolve degraus: milhares de horas com exatamente a mesma
+    probabilidade. O quantil puro cairia dentro de um degrau e o ``>=`` puxaria o degrau
+    inteiro (ex.: orçamento de 5 % virando 9,6 %). Aqui, se o quantil estoura o orçamento,
+    sobe para o próximo valor distinto.
+    """
+    ordenadas = np.sort(np.asarray(probabilidades, dtype="float64"))
+    n = len(ordenadas)
+    maximo = int(np.floor(fracao_max * n))
+    if maximo <= 0:
+        return float(np.nextafter(ordenadas[-1], np.inf))
+    candidato = ordenadas[n - maximo]
+    if n - np.searchsorted(ordenadas, candidato, side="left") > maximo:
+        pos = np.searchsorted(ordenadas, candidato, side="right")
+        candidato = ordenadas[pos] if pos < n else np.nextafter(ordenadas[-1], np.inf)
+    return float(candidato)
+
+
 def escolher_limiares(y, probabilidades, metas: dict = METAS_LIMIARES) -> tuple[dict, dict]:
     """Limiares a partir de metas de precisão/recall na validação.
 
@@ -107,7 +127,7 @@ def escolher_limiares(y, probabilidades, metas: dict = METAS_LIMIARES) -> tuple[
                 diag.setdefault("avisos", []).append(f"{nivel}: precisão-alvo inalcançável; usado o maior corte")
         limiar = float(cortes[idx])
         if "fracao_max" in meta:
-            piso = float(np.quantile(probabilidades, 1 - meta["fracao_max"]))
+            piso = piso_orcamento(probabilidades, meta["fracao_max"])
             if piso > limiar:
                 limiar, limitado_por = piso, "orcamento_de_alertas"
                 idx = min(int(np.searchsorted(cortes, limiar)), len(cortes) - 1)

@@ -426,3 +426,13 @@ def test_cache_separa_limite_ampliado(tmp_path):
     geo.cache["Rua A, São Paulo, SP|limite=40"] = [{"x": 1}, {"x": 2}]
     assert len(geo.buscar("Rua A, São Paulo, SP")) == 1
     assert len(geo.buscar("Rua A, São Paulo, SP", limite=40)) == 2
+
+
+def test_bairro_entre_parenteses_tolera_vazios():
+    from src.geo import bairro_entre_parenteses
+
+    assert bairro_entre_parenteses("R DO PARAISO (VILA MARIANA)") == "VILA MARIANA"
+    assert bairro_entre_parenteses(float("nan")) is None
+    assert bairro_entre_parenteses(pd.NA) is None
+    assert bairro_entre_parenteses(None) is None
+    assert bairro_entre_parenteses("R SEM BAIRRO ()") is None

@@ -1,28 +1,26 @@
 # DATASET — `dataset_v1`
 
-> Ficha do dataset. **Preencher depois da coleta** com os números de
-> `data/processed/dataset_v1_resumo.json` e do notebook `03_dataset.ipynb`.
-> Campos `<...>` estão pendentes.
+> Ficha do dataset. Números de `data/processed/dataset_v1_resumo.json` (gerado em 17/09/2026).
 
 ## 1. Identificação
 
 | Item | Valor |
 |---|---|
 | Arquivo | `data/processed/dataset_v1.parquet` |
-| Gerado em | `<data>` por `python -m src.dataset --versao v1` |
+| Gerado em | 17/09/2026 por `python -m src.dataset --versao v1` (8.081.784 linhas) |
 | Unidade | 1 linha = 1 ponto monitorado × 1 hora cheia (UTC) |
-| Período | 2017-01-01 a `<2025-12-31>` (hora local); eventos do CGE desde 2011 para pontos e frequência |
+| Período | 2017-01-01 a 2025-12-31 (hora local); eventos do CGE desde 2011 para pontos e frequência |
 | Janela do rótulo | 3 h — início em (t, t+3h] |
-| Raio do rótulo (R) | `<300>` m |
+| Raio do rótulo (R) | 300 m |
 | Fonte da chuva | Open-Meteo arquivo, modelo `ecmwf_ifs` (9 km), o mesmo do serviço ao vivo |
 
 ## 2. Origem dos dados
 
 | Fonte | Acesso | Período coletado | Registros brutos | Após filtros |
 |---|---|---|---|---|
-| CGE — alagamentos | raspagem de `cgesp.org/v3/alagamentos.jsp` em `<data>` | `<>` | `<>` | `<>` |
+| CGE — alagamentos | raspagem de `cgesp.org/v3/alagamentos.jsp` em 16/09/2026 | 2011–2025 | 12.621 | 9.528 (geocodificação precisa) |
 | GeoSampa — alagamento + inundação (SIGRC) | WFS `risco_ocorrencia_alagamento` (197) e `risco_ocorrencia_inundacao` (260) | só 2026, só data | 457 | fora do rótulo (validação espacial) |
-| Open-Meteo | `<archive | historical-forecast>`, `<n>` células × `<n>` anos | `<>` | — | — |
+| Open-Meteo | arquivo (`archive`), 27 células × 9 anos | 2017–2025 | — | — |
 | GeoSampa — drenagem (cursos d'água) | WFS `drenagem` (28.366 trechos) | — | — | — |
 | GeoSampa — subprefeituras | WFS `subprefeitura` (32, com `nm_regiao_05`) | — | — | — |
 | Elevação | Open-Meteo Elevation (MDE 90 m) | — | — | — |
@@ -31,15 +29,43 @@
 
 | Precisão | Registros | % |
 |---|---|---|
-| numero ("Referência: 461") | `<>` | `<>` |
-| cruzamento | `<>` | `<>` |
-| referencia | `<>` | `<>` |
-| logradouro (descartado) | `<>` | `<>` |
-| falhou | `<>` | `<>` |
+| cruzamento | 8.212 | 65,1 % |
+| logradouro_curto (via de até ~600 m) | 833 | 6,6 % |
+| numero ("Referência: 461") | 448 | 3,5 % |
+| referencia | 35 | 0,3 % |
+| **aproveitados** | **9.528** | **75,5 %** |
+| logradouro (descartado — via longa) | 2.743 | 21,7 % |
+| falhou | 350 | 2,8 % |
+
+A 1ª rodada (sem os tratamentos de nomes descritos em `docs/coleta-dados.md`) aproveitava 50 %.
+Os descartes são quase todos avenidas longas sem cruzamento (Marginais, Nações Unidas...),
+que ficam sub-representadas nos rótulos.
 
 ## 3. Eventos por ano — cidade × Zona Norte
 
-(saída de `python -m src.pontos unificar`)
+(saída de `python -m src.pontos unificar`, só eventos com geocodificação precisa)
+
+| Ano | Cidade | Zona Norte | % Norte |
+|---|---|---|---|
+| 2011 | 982 | 121 | 12 % |
+| 2012 | 775 | 102 | 13 % |
+| 2013 | 555 | 44 | 8 % |
+| 2014 | 471 | 51 | 11 % |
+| 2015 | 707 | 103 | 15 % |
+| 2016 | 632 | 102 | 16 % |
+| 2017 | 640 | 121 | 19 % |
+| 2018 | 440 | 73 | 17 % |
+| 2019 | 837 | 115 | 14 % |
+| 2020 | 745 | 142 | 19 % |
+| 2021 | 461 | 71 | 15 % |
+| 2022 | 618 | 80 | 13 % |
+| 2023 | 659 | 82 | 12 % |
+| 2024 | 569 | 90 | 16 % |
+| 2025 | 437 | 90 | 21 % |
+| **Total** | **9.528** | **1.387** | 15 % |
+
+Na Zona Norte, 1.387 dos 1.832 registros (76 %) foram aproveitados — a mesma taxa da cidade.
+Os 419 eventos do GeoSampa (2026, sem hora) ficam fora.
 
 Contagem direta do CGE (zona conforme o próprio CGE agrupa), antes da geocodificação:
 
@@ -72,28 +98,33 @@ Contagem direta do CGE (zona conforme o próprio CGE agrupa), antes da geocodifi
 
 ## 4. Pontos monitorados
 
-- Agrupamento: DBSCAN, raio `<200>` m, mínimo `<3>` eventos, eventos até `<2022>`.
-- Seleção: `<100>` mais recorrentes da cidade + todos da Zona Norte → **`<N>` pontos**
-  (`<N_ZN>` na Zona Norte), em `<n>` células de chuva.
+- Agrupamento: DBSCAN, raio 200 m, mínimo 3 eventos, eventos até 2022 (comparação de alternativas em `docs/coleta-dados.md`).
+- Seleção: 100 mais recorrentes da cidade + todos da Zona Norte → **137 pontos**
+  (55 na Zona Norte, 24 Leste, 24 Sul, 23 Oeste, 11 Centro), em 27 células de chuva.
+- Eventos por ponto: mediana 27 (3 a 314). Distância ao curso d'água: mediana 45 m.
+  Elevação: 716 a 841 m. 32 pontos sem bairro (campo só descritivo).
 - Arquivo: `data/processed/pontos.csv`.
 
 ## 5. Filtros e exclusões
 
 | Etapa | Linhas |
 |---|---|
-| ponto × hora bruto | `<>` |
-| − horas já alagadas | `<>` |
-| − horas sem 72 h de chuva completas | `<>` |
-| − subamostragem de horas secas (treino, taxa `<0,07>`) | `<>` |
-| **final** | `<>` |
+| ponto × hora bruto (137 × 78.889 h) | 10.807.793 |
+| − horas já alagadas | 5.402 |
+| − horas sem 72 h de chuva completas (início de 2017) | 9.854 |
+| − subamostragem de horas secas (treino, taxa 0,07) | 2.710.753 |
+| **final** | **8.081.784** |
 
 ## 6. Contagens por divisão
 
 | Split | Anos | Linhas | Positivos | Prevalência | Eventos distintos | Linhas ZN | Positivos ZN |
 |---|---|---|---|---|---|---|---|
-| treino | ≤ 2022 | | | (real ponderada: ) | | | |
-| validação | 2023 | | | | | | |
-| teste | 2024–2025 | | | | | | |
+| treino | 2017–2022 | 4.480.201 | 6.540 | 0,146 % na amostra (real ponderada: 0,091 %) | 2.120 | 1.805.605 | 1.474 |
+| validação | 2023 | 1.199.399 | 1.054 | 0,088 % | 335 | 481.710 | 190 |
+| teste | 2024–2025 | 2.402.184 | 1.472 | 0,061 % | 483 | 964.469 | 394 |
+
+Um evento vira até 3 linhas positivas (as 3 horas anteriores) em cada ponto a ≤ 300 m, por
+isso há mais positivos do que eventos distintos.
 
 ## 7. Dicionário de colunas
 
@@ -126,4 +157,10 @@ Arquivos irmãos: `dataset_v1_resumo.json` (contagens), `dataset_v1_freq_hist.pa
 - CGE focado em vias principais; GeoSampa com hora de registro e possível atraso/duplicata.
 - Geocodificação aproximada (filtrada por precisão).
 - Chuva de modelo com resolução de alguns quilômetros.
-- `<outras observadas na coleta>`
+- Avenidas longas sem cruzamento (Marginais, Nações Unidas, Alcântara Machado) ficam de fora
+  por falta de posição precisa (22 % dos registros).
+- **Prevalência cai no tempo:** 0,091 % no treino, 0,088 % na validação e 0,061 % no teste
+  (menos registros do CGE em 2024–2025). A calibração ajustada em 2023 tende a superestimar
+  um pouco no teste; o Brier e a curva de calibração do teste devem ser lidos com isso em mente.
+- Poucos positivos na Zona Norte na validação (190 linhas, de poucas dezenas de eventos):
+  as métricas por zona na validação são instáveis; o teste (394) é mais confiável.

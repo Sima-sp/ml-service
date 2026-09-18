@@ -1,0 +1,45 @@
+{
+  "limiares": {
+    "MEDIO": 0.002997803748056237,
+    "ALTO": 0.01164021164021164,
+    "CRITICO": 0.25
+  },
+  "estrategia": "metas",
+  "diagnostico": {
+    "MEDIO": {
+      "limiar": 0.002997803748056237,
+      "precisao": 0.006284600118380279,
+      "recall": 0.6850094876660342,
+      "fracao_horas": 0.0957846388066023,
+      "limitado_por": "orcamento_de_alertas",
+      "meta": {
+        "recall_min": 0.8,
+        "fracao_max": 0.05
+      }
+    },
+    "ALTO": {
+      "limiar": 0.01164021164021164,
+      "precisao": 0.021981548335338948,
+      "recall": 0.25996204933586337,
+      "fracao_horas": 0.010392705013094057,
+      "limitado_por": "orcamento_de_alertas",
+      "meta": {
+        "recall_min": 0.5,
+        "fracao_max": 0.01
+      }
+    },
+    "avisos": [
+      "CRITICO: precisão-alvo inalcançável; usado o maior corte"
+    ],
+    "CRITICO": {
+      "limiar": 0.25,
+      "precisao": 0.25,
+      "recall": 0.003795066413662239,
+      "fracao_horas": 1.3340014457240668e-05,
+      "limitado_por": "precisao",
+      "meta": {
+        "precisao_min": 0.5
+      }
+    }
+  }
+}

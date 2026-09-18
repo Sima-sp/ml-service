@@ -47,7 +47,7 @@ tranquilamente em memória e o LightGBM prevê isso em segundos.
 
 ---
 
-## R3 — Limiares 0,15 / 0,40 / 0,70 provavelmente **nunca** vão disparar ❓
+## R3 — Limiares 0,15 / 0,40 / 0,70 **nunca** disparam (confirmado no v1) ✅/❓
 
 Com prevalência na casa de **0,05 % por ponto-hora**, uma probabilidade **calibrada** de 40 %
 é raríssima, mesmo durante um temporal. Com os limiares fixos, o app mostraria "BAIXO" quase
@@ -65,7 +65,12 @@ foi 0,11 e **todas** as 526 mil horas de teste ficaram em BAIXO com os limiares 
    explicação curta (ex.: "8 % — cerca de 150× o normal para este ponto"). Sem isso, "8 % · ALTO"
    parece contraditório.
 
-**Decisão pendente:** fixos ou por metas (e quais metas); como o app mostra a porcentagem.
+**Confirmado com os dados reais (17/09/2026):** no `v1` com limiares fixos, o LightGBM não pôs
+nenhuma hora em ALTO (a maior probabilidade calibrada do teste foi 0,25). O `v1` passou a ser
+treinado com `--limiares metas` (ver R18).
+
+**Decisão pendente:** como o app mostra a porcentagem; se o backend adota os limiares do
+`thresholds_v1.json`.
 
 ---
 
@@ -232,6 +237,57 @@ Misturar os dois modelos no treino criaria uma quebra artificial na série. Por 
 `OPEN_METEO_MODELO = "ecmwf_ifs"` foi fixado no treino e ao vivo, e o período do dataset passou
 a 2017–2025 (treino 2017–2022). Os eventos do CGE de 2011–2016 continuam sendo usados para
 escolher os pontos e calcular a frequência histórica.
+
+---
+
+## R18 — Resultado do `v1`: o limite é a chuva, não o modelo ✅/❓
+
+Treino de 17/09/2026 (`python -m src.train --dataset v1 --versao v1 --limiares metas`):
+
+| Teste 2024–25 | PR-AUC | ROC-AUC | ALTO: precisão / recall | Eventos avisados (ALTO) | Antecedência |
+|---|---|---|---|---|---|
+| regras (baseline) | 0,002 | 0,59 | 0,2 % / 0,3 % | 0,4 % | — |
+| regressão logística | 0,011 | 0,92 | 1,6 % / 18 % | 27 % | 2,3 h |
+| **LightGBM** | 0,010 | **0,93** | 1,6 % / 22 % | **31 %** | 2,4 h |
+| LightGBM, Zona Norte | 0,016 | 0,95 | 2,6 % / 20 % | 29 % | 2,6 h |
+
+Prevalência do teste: 0,061 %. Limiares escolhidos na validação: MEDIO 0,0041 (4,4 % das
+horas), ALTO 0,0119 (0,96 %), CRITICO 0,25 (precisão de 50 % inalcançável).
+
+**Leitura:**
+- o modelo **ordena bem** (ROC 0,93; nas horas em ALTO o risco é ~25× o normal) e é muito
+  melhor que as regras fixas;
+- a **precisão por ponto-hora é baixa** (~2 %): 96 % dos ponto-dias com ALTO não têm
+  alagamento registrado;
+- **a chuva é o gargalo:** em 21 % das horas positivas o IFS 9 km marca < 0,2 mm nas 3 h
+  anteriores. Mesmo usando a chuva *observada* das 3 h seguintes (teto teórico,
+  `--usar-chuva-prevista --permitir-oraculo`), a PR-AUC só vai de 0,010 para 0,014 e os eventos
+  avisados de 31 % para 36 %. Previsão melhor (R1) ajuda pouco com esse modelo de chuva;
+- **agregando, o alerta fica útil** (mesmo modelo, maior probabilidade do grupo, teste):
+
+| Unidade do alerta | Prevalência | PR-AUC | 2 % das horas com maior risco: precisão / recall |
+|---|---|---|---|
+| ponto × hora | 0,06 % | 0,010 | — |
+| ponto × dia | 0,5 % | 0,046 | 4 % / 32 % |
+| subprefeitura × hora | 0,26 % | 0,038 | 4,5 % / 36 % |
+| zona × hora | 1,0 % | 0,091 | 10 % / 40 % |
+| cidade × hora | 3,0 % | 0,234 | 33 % / 26 % |
+
+- `dia_semana` e `hora_dia` têm peso alto: parte é chuva de verão à tarde, parte é viés do
+  registro (o CGE registra mais em dias úteis, com trânsito). Declarar como limitação.
+
+**Propostas:**
+1. **App:** tratar o nível como "risco acima do normal", não como previsão certa; mostrar a
+   porcentagem com a comparação ("~25× o normal") ou não mostrar (ligado a R3).
+2. **Alerta regional:** além do nível por ponto, um aviso por zona/cidade ("risco elevado de
+   alagamentos na Zona Norte nas próximas 3 h"), que acerta bem mais. Não muda o contrato do
+   `/predict`; seria um endpoint novo (decisão do grupo — ADR).
+3. **Melhor chuva (maior ganho esperado):** os pluviômetros do CGE (`src/collect/cge_pluvio.py`)
+   medem a chuva real perto dos pontos. Exige raspagem ao vivo das estações (seção 5.2).
+   Alternativa: radar meteorológico, mais trabalhoso.
+4. Ajuste de hiperparâmetros do LightGBM: ganho esperado pequeno perto dos itens acima.
+
+**Decisão pendente:** 2 e 3.
 
 ---
 
