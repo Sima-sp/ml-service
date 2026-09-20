@@ -68,10 +68,17 @@ def criar_regressao_logistica(features: list[str]) -> Pipeline:
 
 
 def criar_random_forest(features: list[str]) -> Pipeline:
+    """Random Forest de comparação (o principal é o LightGBM).
+
+    ``max_samples`` e o número de árvores são menores que o usual de propósito: com ~4,5 milhões
+    de linhas de treino, a floresta completa não cabe na memória de uma máquina comum e leva
+    horas. Cada árvore vê 30 % das linhas sorteadas, que é suficiente para o papel dela aqui —
+    servir de referência na tabela de comparação do TCC.
+    """
     return Pipeline([
         ("preparo", _preprocessador(features, escalar=False)),
         ("modelo", RandomForestClassifier(
-            n_estimators=400, min_samples_leaf=50, max_features="sqrt",
+            n_estimators=150, min_samples_leaf=50, max_features="sqrt", max_samples=0.3,
             n_jobs=-1, random_state=SEMENTE)),
     ])
 

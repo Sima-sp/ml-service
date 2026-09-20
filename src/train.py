@@ -92,7 +92,8 @@ def montar_pontos_modelo(dataset: pd.DataFrame, versao_dataset: str) -> pd.DataF
     for arq in (caminho_pontos_dataset(versao_dataset), ARQ_PONTOS):
         if arq.exists():
             extra = pd.read_csv(arq)
-            colunas = [c for c in ("ponto_id", "bairro", "subprefeitura", "celula_id") if c in extra]
+            # logradouro entra para o alerta por região poder nomear o ponto mais crítico
+            colunas = [c for c in ("ponto_id", "bairro", "subprefeitura", "celula_id", "logradouro") if c in extra]
             pontos = pontos.merge(extra[colunas], on="ponto_id", how="left")
             break
     return pontos
@@ -130,6 +131,8 @@ def treinar(
 
     resultados_val: dict = {}
     resultados_teste: dict = {}
+    p_val_por_modelo: dict = {}
+    p_teste_por_modelo: dict = {}
     probs_teste: dict = {}
     pacotes: dict = {}
     extras: dict = {}
@@ -172,6 +175,8 @@ def treinar(
         resultados_val[nome_modelo] = avaliar(partes["validacao"], p_val, niveis_por_probabilidade(p_val, limiares))
         resultados_teste[nome_modelo] = avaliar(partes["teste"], p_teste, niveis_por_probabilidade(p_teste, limiares))
         probs_teste[nome_modelo] = p_teste
+        p_val_por_modelo[nome_modelo] = p_val
+        p_teste_por_modelo[nome_modelo] = p_teste
         pacotes[nome_modelo] = (modelo, calibrador, limiares, diag)
 
     # --- relatórios
@@ -226,14 +231,71 @@ def treinar(
                 **extras,
             },
         )
-        caminhos = salvar_pacote(pacote, montar_pontos_modelo(dataset, versao_dataset), DIR_MODELOS,
+        pontos_modelo = montar_pontos_modelo(dataset, versao_dataset)
+        caminhos = salvar_pacote(pacote, pontos_modelo, DIR_MODELOS,
                                  extras_limiares={"estrategia": estrategia_limiares, "diagnostico": diag})
         log.info("Modelo salvo: %s", {k: str(v) for k, v in caminhos.items()})
+        _limiares_de_regiao(dataset, pontos_modelo, p_val_por_modelo[principal],
+                            p_teste_por_modelo[principal], versao_modelo)
 
     log.info("Concluído em %.1fs", time.time() - inicio_relogio)
     for titulo, tabela in comparacao.items():
         print(f"\n== {titulo} ==\n{tabela.to_string(index=False)}")
     return metricas
+
+
+def _limiares_de_regiao(dataset: pd.DataFrame, pontos: pd.DataFrame, p_val, p_teste,
+                        versao_modelo: str) -> None:
+    """Escolhe e salva os limiares do alerta por subprefeitura (ADR 0005).
+
+    O alerta de região usa o MAIOR risco entre os pontos da região, então a escala das
+    probabilidades muda e os limiares por ponto não servem. Regiões com menos de
+    ``MIN_PONTOS_REGIAO`` pontos ficam de fora (cobertura insuficiente).
+    """
+    from src.regioes import (
+        METAS_LIMIARES_REGIAO,
+        MIN_PONTOS_REGIAO,
+        anotar_regiao,
+        avaliar_regioes,
+        series_por_regiao,
+    )
+
+    if "subprefeitura" not in pontos:
+        log.warning("Pontos sem coluna 'subprefeitura' — limiares de região não gerados")
+        return
+
+    pontos = anotar_regiao(pontos)
+    cobertura = pontos.groupby("regiao_id").size()
+    cobertas = set(cobertura[cobertura >= MIN_PONTOS_REGIAO].index)
+    if not cobertas:
+        log.warning("Nenhuma região com %d+ pontos — limiares de região não gerados", MIN_PONTOS_REGIAO)
+        return
+
+    base = dataset.assign(ponto_id=dataset["ponto_id"].astype(str)).merge(
+        pontos[["ponto_id", "regiao_id", "regiao_nome"]], on="ponto_id", how="left")
+    val = base[base["split"] == "validacao"].assign(p=p_val)
+    teste = base[base["split"] == "teste"].assign(p=p_teste)
+    val = val[val["regiao_id"].isin(cobertas)]
+    teste = teste[teste["regiao_id"].isin(cobertas)]
+
+    serie_val = series_por_regiao(val, val["p"])
+    limiares, diag = escolher_limiares(serie_val["y"], serie_val["p"], METAS_LIMIARES_REGIAO)
+
+    serie_teste = series_por_regiao(teste, teste["p"])
+    nomes = pontos.drop_duplicates("regiao_id").set_index("regiao_id")["regiao_nome"]
+    for nivel in ("MEDIO", "ALTO"):
+        aval = avaliar_regioes(serie_teste, limiares, nivel_minimo=nivel)
+        aval.insert(1, "regiao", aval["regiao_id"].map(nomes).fillna("TOTAL"))
+        aval.to_csv(DIR_RELATORIOS / f"regioes_{versao_modelo}_{nivel.lower()}.csv", index=False)
+        total = aval[aval["regiao_id"] == "TOTAL"].iloc[0]
+        log.info("Região (corte %s): precisão %.3f, recall %.3f, %.2f%% das horas em alerta",
+                 nivel, total["precisao"], total["recall"], 100 * total["fracao_horas_em_alerta"])
+
+    (DIR_MODELOS / f"thresholds_regiao_{versao_modelo}.json").write_text(
+        json.dumps({"limiares": limiares, "estrategia": "metas_regiao",
+                    "min_pontos_regiao": MIN_PONTOS_REGIAO, "regioes_cobertas": sorted(cobertas),
+                    "diagnostico": diag}, indent=2, ensure_ascii=False, default=str), encoding="utf-8")
+    log.info("Limiares de região salvos: %s", limiares)
 
 
 def _principal() -> None:

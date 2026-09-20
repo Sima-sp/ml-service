@@ -16,6 +16,7 @@ Falhas viram ``ErroPrevisao`` com um código estável, que o backend usa para ca
 
 from __future__ import annotations
 
+import json
 import logging
 
 import pandas as pd
@@ -27,14 +28,17 @@ from app.schemas import (
     FonteChuva,
     ItemLote,
     OrigemPrevisao,
+    RegiaoRisco,
     RequisicaoPrevisao,
     RespostaPrevisao,
+    RespostaRegioes,
 )
 from src.artefatos import PacoteModelo, carregar_pacote, existe_pacote
 from src.baseline import BaselineRegras
 from src.config import JANELA_PREVISAO_HORAS, caminho_pontos_modelo
+from src.regioes import MIN_PONTOS_REGIAO, agregar_por_regiao, anotar_regiao
 from src.features import features_ao_vivo
-from src.niveis import nivel_por_probabilidade, valor_contrato
+from src.niveis import nivel_por_probabilidade, valor_contrato, validar_limiares
 from src.sensor_adjust import ajustar_por_sensor
 from src.tempo import agora_utc, garantir_utc, hora_referencia, para_iso_local
 
@@ -71,6 +75,25 @@ class Preditor:
         self.resolvedor = resolvedor or ResolvedorPontos(
             caminho_pontos_modelo(config.versao_modelo, config.dir_modelos), config.raio_ponto_conhecido_m)
         self.baseline = BaselineRegras()
+        self.pontos_regiao = anotar_regiao(self.resolvedor.pontos) if len(self.resolvedor) else pd.DataFrame()
+        self.limiares_regiao = self._carregar_limiares_regiao()
+
+    def _carregar_limiares_regiao(self) -> dict | None:
+        """Limiares do alerta por região (``models/thresholds_regiao_<versao>.json``).
+
+        São diferentes dos limiares por ponto: o alerta de região usa o MAIOR risco entre os
+        pontos da região, então a escala muda. Sem o arquivo, o alerta por região fica
+        desligado — é melhor não alertar do que alertar com limiar de outra escala.
+        """
+        caminho = self.config.dir_modelos / f"thresholds_regiao_{self.config.versao_modelo}.json"
+        if not caminho.exists():
+            log.warning("Sem %s — alerta por região desligado", caminho.name)
+            return None
+        try:
+            return validar_limiares(json.loads(caminho.read_text(encoding="utf-8"))["limiares"])
+        except Exception as erro:  # noqa: BLE001
+            log.warning("Limiares de região inválidos em %s: %s", caminho.name, erro)
+            return None
 
     # ------------------------------------------------------------------ info
     @property
@@ -123,6 +146,88 @@ class Preditor:
                 itens.append(ItemLote(sensorId=req.sensorId, sucesso=False, erro=str(erro),
                                       codigoErro="ERRO_INTERNO"))
         return itens
+
+    def prever_regioes(self, agora: pd.Timestamp | None = None) -> RespostaRegioes:
+        """Risco por subprefeitura: o maior risco entre os pontos monitorados de cada uma.
+
+        Serve ao aviso de região do app ("risco elevado na Vila Maria nas próximas 3 h"). O
+        modelo é o mesmo dos pontos; muda só a escala em que a resposta é lida — e, nessa
+        escala, ele acerta várias vezes mais (ver ``docs/recomendacoes.md``, R18).
+        """
+        agora = agora or agora_utc()
+        if self.pontos_regiao.empty:
+            raise ErroPrevisao("SEM_PONTOS", "Nenhum ponto monitorado carregado", 503)
+        if self.limiares_regiao is None:
+            raise ErroPrevisao("SEM_LIMIARES_REGIAO",
+                               "Limiares de região não encontrados para esta versão do modelo", 503)
+
+        pontos = self.pontos_regiao
+        coordenadas = list(zip(pontos["lat"], pontos["lon"], strict=True))
+        chuvas = self.servico_chuva.obter(coordenadas)
+
+        linhas, probabilidades, avisos, validos = [], [], [], []
+        t_ref = None
+        for (_, ponto), chuva in zip(pontos.iterrows(), chuvas, strict=True):
+            if chuva is None or chuva.serie is None:
+                continue
+            estaticas = {
+                "lat": float(ponto["lat"]), "lon": float(ponto["lon"]),
+                "elevacao": float(ponto.get("elevacao", float("nan"))),
+                "dist_corrego_m": float(ponto.get("dist_corrego_m", float("nan"))),
+                "zona": ponto.get("zona"),
+                "freq_hist_alagamento": float(ponto.get("freq_hist_alagamento", float("nan"))),
+            }
+            try:
+                linha, t_ref, _ = features_ao_vivo(chuva.serie, agora, estaticas, None)
+            except ValueError:
+                continue
+            linhas.append(linha)
+            validos.append(ponto["ponto_id"])
+
+        if not linhas:
+            raise ErroPrevisao("CHUVA_INDISPONIVEL", "Sem chuva recente para os pontos monitorados", 503)
+        if len(linhas) < len(pontos):
+            avisos.append(f"{len(pontos) - len(linhas)} ponto(s) sem chuva disponível ficaram de fora")
+
+        matriz = pd.concat(linhas, ignore_index=True)
+        if self.pacote:
+            probabilidades = self.pacote.prever_probabilidade(matriz)
+        else:
+            # Modo regras: sem probabilidade honesta, o alerta por região não é emitido.
+            raise ErroPrevisao("SEM_MODELO", "Alerta por região exige modelo treinado", 503)
+
+        usados = pontos[pontos["ponto_id"].isin(validos)]
+        resumo = agregar_por_regiao(usados, probabilidades, MIN_PONTOS_REGIAO)
+        acento = self.config.nivel_risco_com_acento
+        gerada = agora.floor("s")
+
+        regioes = []
+        for linha in resumo.itertuples(index=False):
+            coberta = linha.cobertura == "COBERTA"
+            nivel = nivel_por_probabilidade(float(linha.probabilidade), self.limiares_regiao)
+            regioes.append(RegiaoRisco(
+                regiaoId=linha.regiao_id,
+                regiao=linha.regiao_nome,
+                zona=linha.regiao_zona,
+                nivelRisco=valor_contrato(nivel, acento) if coberta else None,
+                probabilidadeMaxima=round(float(linha.probabilidade), 4) if coberta else None,
+                pontoId=str(linha.ponto_id) if coberta else None,
+                logradouro=getattr(linha, "logradouro", None) if coberta else None,
+                pontosMonitorados=int(linha.pontos_monitorados),
+                cobertura=linha.cobertura,
+            ))
+
+        return RespostaRegioes(
+            geradaEm=para_iso_local(gerada),
+            validaAte=para_iso_local(gerada + pd.Timedelta(minutes=self.config.validade_previsao_min)),
+            horaReferencia=para_iso_local(t_ref),
+            janelaHoras=JANELA_PREVISAO_HORAS,
+            origem=self.origem,
+            modeloVersao=self.modelo_versao,
+            minPontosRegiao=MIN_PONTOS_REGIAO,
+            regioes=regioes,
+            avisos=avisos,
+        )
 
     def _resolver_chuva(self, req: RequisicaoPrevisao, chuva: ChuvaObtida | None, instante: pd.Timestamp):
         """Decide de onde vem a chuva. Retorna (série | None, resumo | None, fonte, avisos)."""

@@ -1,0 +1,60 @@
+{
+  "limiares": {
+    "MEDIO": 0.010169491525423728,
+    "ALTO": 0.021003500583430573,
+    "CRITICO": 0.17647058823529413
+  },
+  "estrategia": "metas_regiao",
+  "min_pontos_regiao": 3,
+  "regioes_cobertas": [
+    "ARICANDUVA-FORMOSA-CARRAO",
+    "BUTANTA",
+    "CASA-VERDE-CACHOEIRINHA",
+    "JACANA-TREMEMBE",
+    "LAPA",
+    "MOOCA",
+    "PENHA",
+    "PERUS-ANHANGUERA",
+    "PINHEIROS",
+    "PIRITUBA-JARAGUA",
+    "SANTANA-TUCURUVI",
+    "SANTO-AMARO",
+    "SE",
+    "VILA-MARIA-VILA-GUILHERME",
+    "VILA-MARIANA"
+  ],
+  "diagnostico": {
+    "MEDIO": {
+      "limiar": 0.010169491525423728,
+      "precisao": 0.05235914791956998,
+      "recall": 0.38563049853372433,
+      "fracao_horas": 0.038226788432267886,
+      "limitado_por": "orcamento_de_alertas",
+      "meta": {
+        "recall_min": 0.8,
+        "fracao_max": 0.05
+      }
+    },
+    "ALTO": {
+      "limiar": 0.021003500583430573,
+      "precisao": 0.10476190476190476,
+      "recall": 0.1935483870967742,
+      "fracao_horas": 0.009589041095890411,
+      "limitado_por": "orcamento_de_alertas",
+      "meta": {
+        "recall_min": 0.5,
+        "fracao_max": 0.02
+      }
+    },
+    "CRITICO": {
+      "limiar": 0.17647058823529413,
+      "precisao": 0.34782608695652173,
+      "recall": 0.011730205278592375,
+      "fracao_horas": 0.0001750380517503805,
+      "limitado_por": "precisao",
+      "meta": {
+        "precisao_min": 0.3
+      }
+    }
+  }
+}

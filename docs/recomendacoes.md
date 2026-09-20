@@ -287,7 +287,16 @@ horas), ALTO 0,0119 (0,96 %), CRITICO 0,25 (precisão de 50 % inalcançável).
    Alternativa: radar meteorológico, mais trabalhoso.
 4. Ajuste de hiperparâmetros do LightGBM: ganho esperado pequeno perto dos itens acima.
 
-**Decisão pendente:** 2 e 3.
+**Decidido em 20/09/2026 (item 2):** o alerta de região sai por **subprefeitura**, com a regra
+de cobertura mínima de 3 pontos e limiares próprios (ADR 0005). Medido no teste, por
+subprefeitura: ALTO acerta 8,0 % e pega 15 % das horas com alagamento; MEDIO acerta 4,8 % e pega
+42 %. Por ponto, o ALTO acerta 1,6 %. Detalhe por região em `reports/regioes_v1.csv`.
+
+Implementado: `src/regioes.py`, `GET /predict/regioes` no serviço e
+`GET /previsoes/regioes` no backend. O alerta por ponto **continua** sendo a base do mapa e do
+desvio de rota; a região é camada de contexto.
+
+**Decisão pendente:** item 3 (pluviômetros do CGE).
 
 ---
 

@@ -39,7 +39,7 @@ monitorado (bueiro, boca de lobo, via crítica) e devolve um **nível de risco**
 | Pontos recorrentes, rótulo, features, dataset | ✅ pronto e testado com dados sintéticos |
 | Baseline, regressão logística, LightGBM, Random Forest, calibração, limiares, métricas | ✅ pronto e testado com dados sintéticos |
 | Ajuste pelo sensor | ✅ pronto e testado |
-| API FastAPI (`/health`, `/model-info`, `/predict`, `/predict/batch`) | ✅ pronta; sobe em **modo regras** enquanto não há modelo |
+| API FastAPI (`/health`, `/model-info`, `/predict`, `/predict/batch`, `/predict/regioes`) | ✅ pronta; sobe em **modo regras** enquanto não há modelo |
 | **Dados reais** (`data/`) | 🔄 em coleta: CGE e GeoSampa baixados; geocodificação em andamento (ver [`docs/coleta-dados.md`](docs/coleta-dados.md)) |
 | Modelo v1 treinado (`models/`) | ⏳ depende do dataset |
 | Limiares do baseline iguais aos do `RiskClassificationService` | ⏳ copiar do código Java (`src/baseline.py`) |
@@ -367,6 +367,7 @@ python -m src.train --dataset v1prev --versao v1prev --usar-chuva-prevista     #
 | `GET /model-info` | features, período, divisão, calibração, limiares, métricas de teste, versões das libs |
 | `POST /predict` | uma previsão |
 | `POST /predict/batch` | lista de requisições → lista de resultados **na mesma ordem**; um item com erro não derruba o lote |
+| `GET /predict/regioes` | risco por subprefeitura (maior risco entre os pontos da região), para o aviso de região do app — ver ADR 0005 |
 
 ### Requisição (compatível com o payload antigo)
 

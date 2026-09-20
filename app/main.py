@@ -5,6 +5,7 @@ Rotas:
 - ``GET  /model-info``     features, período de treino, métricas, limiares
 - ``POST /predict``        previsão para um sensor/ponto
 - ``POST /predict/batch``  lista de sensores (usado pelo agendador do backend a cada 10 min)
+- ``GET  /predict/regioes`` risco por subprefeitura (aviso de região do app)
 - ``GET  /docs``           Swagger gerado automaticamente
 
 Subir localmente::
@@ -26,7 +27,14 @@ from fastapi.responses import JSONResponse
 
 from app.configuracao import obter_configuracoes
 from app.predictor import ErroPrevisao, Preditor
-from app.schemas import ErroResposta, ItemLote, RequisicaoPrevisao, RespostaPrevisao, RespostaSaude
+from app.schemas import (
+    ErroResposta,
+    ItemLote,
+    RequisicaoPrevisao,
+    RespostaPrevisao,
+    RespostaRegioes,
+    RespostaSaude,
+)
 
 log = logging.getLogger("sima.ia")
 
@@ -77,6 +85,17 @@ def criar_app(preditor: Preditor | None = None) -> FastAPI:
               responses={422: {"model": ErroResposta}, 503: {"model": ErroResposta}})
     def prever(req: RequisicaoPrevisao, request: Request) -> RespostaPrevisao:
         return request.app.state.preditor.prever(req)
+
+    @app.get("/predict/regioes", response_model=RespostaRegioes, tags=["previsão"],
+             responses={503: {"model": ErroResposta}})
+    def prever_regioes(request: Request) -> RespostaRegioes:
+        """Risco por subprefeitura, do mais crítico para o menos.
+
+        Regiões com menos de ``minPontosRegiao`` pontos monitorados vêm com
+        ``cobertura = SEM_COBERTURA`` e sem nível: não dá para falar pela região inteira com um
+        ponto só. "Sem cobertura" não é "sem risco", e a tela precisa deixar isso claro.
+        """
+        return request.app.state.preditor.prever_regioes()
 
     @app.post("/predict/batch", response_model=list[ItemLote], tags=["previsão"],
               responses={413: {"model": ErroResposta}})

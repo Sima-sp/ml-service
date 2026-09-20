@@ -97,6 +97,34 @@ class RespostaPrevisao(BaseModel):
     avisos: list[str] = []
 
 
+class RegiaoRisco(BaseModel):
+    """Risco de uma subprefeitura: o maior risco entre os pontos monitorados dela."""
+
+    regiaoId: str
+    regiao: str = Field(..., description="Nome para a tela, ex.: 'Vila Maria / Vila Guilherme'")
+    zona: str
+    nivelRisco: str | None = Field(None, description="null quando a região não tem cobertura")
+    probabilidadeMaxima: float | None = None
+    pontoId: str | None = Field(None, description="Ponto que puxou o risco da região")
+    logradouro: str | None = None
+    pontosMonitorados: int
+    cobertura: str = Field(..., description="COBERTA | SEM_COBERTURA (poucos pontos monitorados)")
+
+
+class RespostaRegioes(BaseModel):
+    """Saída de ``GET /predict/regioes``: uma linha por subprefeitura, da mais crítica para a menos."""
+
+    geradaEm: str
+    validaAte: str
+    horaReferencia: str
+    janelaHoras: int = 3
+    origem: OrigemPrevisao
+    modeloVersao: str
+    minPontosRegiao: int = Field(..., description="Abaixo disso a região fica SEM_COBERTURA")
+    regioes: list[RegiaoRisco]
+    avisos: list[str] = []
+
+
 class ItemLote(BaseModel):
     """Um resultado de ``POST /predict/batch`` (a lista mantém a ordem da entrada)."""
 
