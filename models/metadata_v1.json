@@ -1,5 +1,5 @@
 {
-  "treinado_em": "2026-09-17T13:23:07.592621+00:00",
+  "treinado_em": "2026-09-19T18:58:48.105282+00:00",
   "dataset": "v1",
   "fonte_chuva": "arquivo",
   "periodo": {
@@ -36,34 +36,34 @@
       },
       "por_nivel": {
         ">=MEDIO": {
-          "precisao": 0.2121,
-          "recall": 0.0066,
-          "f1": 0.0129,
-          "fracao_horas_em_alerta": 2.8e-05
+          "precisao": 0.0102,
+          "recall": 0.5076,
+          "f1": 0.02,
+          "fracao_horas_em_alerta": 0.043776
         },
         ">=ALTO": {
-          "precisao": 0.0,
-          "recall": 0.0,
-          "f1": 0.0,
-          "fracao_horas_em_alerta": 0.0
+          "precisao": 0.0228,
+          "recall": 0.2495,
+          "f1": 0.0418,
+          "fracao_horas_em_alerta": 0.009605
         },
         "CRITICO": {
-          "precisao": 0.0,
-          "recall": 0.0,
-          "f1": 0.0,
-          "fracao_horas_em_alerta": 0.0
+          "precisao": 0.25,
+          "recall": 0.0038,
+          "f1": 0.0075,
+          "fracao_horas_em_alerta": 1.3e-05
         }
       },
       "por_evento": {
         "nivel_minimo": "ALTO",
         "eventos": 335,
-        "eventos_detectados": 0,
-        "recall_eventos": 0.0,
-        "antecedencia_media_h": null,
+        "eventos_detectados": 113,
+        "recall_eventos": 0.3373,
+        "antecedencia_media_h": 2.38,
         "ponto_dias": 50005,
-        "ponto_dias_com_alerta": 0,
-        "ponto_dias_alarme_falso": 0,
-        "taxa_alarme_falso": null
+        "ponto_dias_com_alerta": 3354,
+        "ponto_dias_alarme_falso": 3191,
+        "taxa_alarme_falso": 0.9514
       }
     },
     "zona_norte": {
@@ -78,34 +78,34 @@
       },
       "por_nivel": {
         ">=MEDIO": {
-          "precisao": 0.125,
-          "recall": 0.0053,
-          "f1": 0.0101,
-          "fracao_horas_em_alerta": 1.7e-05
+          "precisao": 0.0076,
+          "recall": 0.3947,
+          "f1": 0.015,
+          "fracao_horas_em_alerta": 0.020419
         },
         ">=ALTO": {
-          "precisao": 0.0,
-          "recall": 0.0,
-          "f1": 0.0,
-          "fracao_horas_em_alerta": 0.0
+          "precisao": 0.0208,
+          "recall": 0.2105,
+          "f1": 0.0378,
+          "fracao_horas_em_alerta": 0.003996
         },
         "CRITICO": {
-          "precisao": 0.0,
-          "recall": 0.0,
-          "f1": 0.0,
-          "fracao_horas_em_alerta": 0.0
+          "precisao": 0.25,
+          "recall": 0.0053,
+          "f1": 0.0103,
+          "fracao_horas_em_alerta": 8e-06
         }
       },
       "por_evento": {
         "nivel_minimo": "ALTO",
         "eventos": 63,
-        "eventos_detectados": 0,
-        "recall_eventos": 0.0,
-        "antecedencia_media_h": null,
+        "eventos_detectados": 16,
+        "recall_eventos": 0.254,
+        "antecedencia_media_h": 2.56,
         "ponto_dias": 20075,
-        "ponto_dias_com_alerta": 0,
-        "ponto_dias_alarme_falso": 0,
-        "taxa_alarme_falso": null
+        "ponto_dias_com_alerta": 624,
+        "ponto_dias_alarme_falso": 598,
+        "taxa_alarme_falso": 0.9583
       }
     }
   },
@@ -122,34 +122,34 @@
       },
       "por_nivel": {
         ">=MEDIO": {
-          "precisao": 0.0323,
-          "recall": 0.0007,
-          "f1": 0.0013,
-          "fracao_horas_em_alerta": 1.3e-05
+          "precisao": 0.0079,
+          "recall": 0.5496,
+          "f1": 0.0156,
+          "fracao_horas_em_alerta": 0.042504
         },
         ">=ALTO": {
-          "precisao": 0.0,
-          "recall": 0.0,
-          "f1": 0.0,
-          "fracao_horas_em_alerta": 0.0
+          "precisao": 0.016,
+          "recall": 0.2154,
+          "f1": 0.0298,
+          "fracao_horas_em_alerta": 0.008252
         },
         "CRITICO": {
-          "precisao": 0.0,
-          "recall": 0.0,
-          "f1": 0.0,
-          "fracao_horas_em_alerta": 0.0
+          "precisao": 0.0476,
+          "recall": 0.0007,
+          "f1": 0.0013,
+          "fracao_horas_em_alerta": 9e-06
         }
       },
       "por_evento": {
         "nivel_minimo": "ALTO",
         "eventos": 483,
-        "eventos_detectados": 0,
-        "recall_eventos": 0.0,
-        "antecedencia_media_h": null,
+        "eventos_detectados": 151,
+        "recall_eventos": 0.3126,
+        "antecedencia_media_h": 2.4,
         "ponto_dias": 100147,
-        "ponto_dias_com_alerta": 0,
-        "ponto_dias_alarme_falso": 0,
-        "taxa_alarme_falso": null
+        "ponto_dias_com_alerta": 6104,
+        "ponto_dias_alarme_falso": 5875,
+        "taxa_alarme_falso": 0.9625
       }
     },
     "zona_norte": {
@@ -164,34 +164,34 @@
       },
       "por_nivel": {
         ">=MEDIO": {
-          "precisao": 0.0,
-          "recall": 0.0,
-          "f1": 0.0,
-          "fracao_horas_em_alerta": 6e-06
+          "precisao": 0.0101,
+          "recall": 0.467,
+          "f1": 0.0198,
+          "fracao_horas_em_alerta": 0.018875
         },
         ">=ALTO": {
-          "precisao": 0.0,
-          "recall": 0.0,
-          "f1": 0.0,
-          "fracao_horas_em_alerta": 0.0
+          "precisao": 0.0259,
+          "recall": 0.198,
+          "f1": 0.0458,
+          "fracao_horas_em_alerta": 0.003125
         },
         "CRITICO": {
           "precisao": 0.0,
           "recall": 0.0,
           "f1": 0.0,
-          "fracao_horas_em_alerta": 0.0
+          "fracao_horas_em_alerta": 5e-06
         }
       },
       "por_evento": {
         "nivel_minimo": "ALTO",
         "eventos": 133,
-        "eventos_detectados": 0,
-        "recall_eventos": 0.0,
-        "antecedencia_media_h": null,
+        "eventos_detectados": 38,
+        "recall_eventos": 0.2857,
+        "antecedencia_media_h": 2.55,
         "ponto_dias": 40205,
-        "ponto_dias_com_alerta": 0,
-        "ponto_dias_alarme_falso": 0,
-        "taxa_alarme_falso": null
+        "ponto_dias_com_alerta": 977,
+        "ponto_dias_alarme_falso": 927,
+        "taxa_alarme_falso": 0.9488
       }
     }
   },

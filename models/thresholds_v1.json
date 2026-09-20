@@ -1,11 +1,45 @@
 {
   "limiares": {
-    "MEDIO": 0.15,
-    "ALTO": 0.4,
-    "CRITICO": 0.7
+    "MEDIO": 0.004064554692169755,
+    "ALTO": 0.011904761904761904,
+    "CRITICO": 0.25
   },
-  "estrategia": "fixos",
+  "estrategia": "metas",
   "diagnostico": {
-    "estrategia": "fixos do briefing"
+    "MEDIO": {
+      "limiar": 0.004064554692169755,
+      "precisao": 0.010189505761356061,
+      "recall": 0.5075901328273245,
+      "fracao_horas": 0.04377609119233883,
+      "limitado_por": "orcamento_de_alertas",
+      "meta": {
+        "recall_min": 0.8,
+        "fracao_max": 0.05
+      }
+    },
+    "ALTO": {
+      "limiar": 0.011904761904761904,
+      "precisao": 0.02282986111111111,
+      "recall": 0.2495256166982922,
+      "fracao_horas": 0.009604810409213281,
+      "limitado_por": "orcamento_de_alertas",
+      "meta": {
+        "recall_min": 0.5,
+        "fracao_max": 0.01
+      }
+    },
+    "avisos": [
+      "CRITICO: precisão-alvo inalcançável; usado o maior corte"
+    ],
+    "CRITICO": {
+      "limiar": 0.25,
+      "precisao": 0.25,
+      "recall": 0.003795066413662239,
+      "fracao_horas": 1.3340014457240668e-05,
+      "limitado_por": "precisao",
+      "meta": {
+        "precisao_min": 0.5
+      }
+    }
   }
 }
