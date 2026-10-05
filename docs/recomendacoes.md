@@ -192,11 +192,17 @@ Detalhes em `docs/integracao-backend.md`. Resumo:
 
 ---
 
-## R14 — Versões de biblioteca iguais no treino e no serviço ❓
+## R14 — Versões de biblioteca iguais no treino e no serviço ✅
 
-O joblib do LightGBM/scikit-learn só é garantido na **mesma versão**. Depois do primeiro treino
-real, rodar `pip freeze > requirements-servico.lock` e usar o `.lock` no Dockerfile.
-`metadata_v1.json` registra as versões usadas.
+O joblib do LightGBM/scikit-learn só é garantido na **mesma versão**. Feito em 20/09/2026:
+
+- `requirements-servico.lock` — versões exatas do serviço (36 pacotes, só o fecho de
+  `requirements-servico.txt`). É o que o `Dockerfile` instala;
+- `requirements.lock` — o ambiente completo de treino (`pip freeze`), para recriar o `.venv`;
+- `metadata_v1.json` registra as versões usadas no treino.
+
+**Regra:** o `.lock` e o `.joblib` andam juntos. Atualizou uma biblioteca → treina de novo e gera
+os dois arquivos de novo (`pip freeze > requirements.lock`; o do serviço é o subconjunto).
 
 ---
 

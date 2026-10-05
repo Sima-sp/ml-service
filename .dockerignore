@@ -1,4 +1,4 @@
-# Só entra na imagem o que o serviço precisa: app/, src/, models/ e requirements-servico.txt
+# Só entra na imagem o que o serviço precisa: app/, src/, models/ e requirements-servico.lock
 .git
 .venv
 venv

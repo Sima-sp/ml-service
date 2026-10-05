@@ -15,8 +15,9 @@ RUN apt-get update \
 
 WORKDIR /app
 
-COPY requirements-servico.txt .
-RUN pip install -r requirements-servico.txt
+# Versões travadas: as mesmas do ambiente que treinou o modelo (ver o cabeçalho do arquivo).
+COPY requirements-servico.lock .
+RUN pip install -r requirements-servico.lock
 
 # src/ é necessário: features.py é o MESMO código do treino e o joblib referencia classes dele
 COPY src/ ./src/
