@@ -6,6 +6,7 @@ Rotas:
 - ``POST /predict``        previsão para um sensor/ponto
 - ``POST /predict/batch``  lista de sensores (usado pelo agendador do backend a cada 10 min)
 - ``GET  /predict/regioes`` risco por subprefeitura (aviso de região do app)
+- ``POST /predict/regioes`` o mesmo, com chuva informada (simulação para a demonstração)
 - ``GET  /docs``           Swagger gerado automaticamente
 
 Subir localmente::
@@ -31,6 +32,7 @@ from app.schemas import (
     ErroResposta,
     ItemLote,
     RequisicaoPrevisao,
+    RequisicaoRegioes,
     RespostaPrevisao,
     RespostaRegioes,
     RespostaSaude,
@@ -96,6 +98,17 @@ def criar_app(preditor: Preditor | None = None) -> FastAPI:
         ponto só. "Sem cobertura" não é "sem risco", e a tela precisa deixar isso claro.
         """
         return request.app.state.preditor.prever_regioes()
+
+    @app.post("/predict/regioes", response_model=RespostaRegioes, tags=["previsão"],
+              responses={503: {"model": ErroResposta}})
+    def prever_regioes_simulado(req: RequisicaoRegioes, request: Request) -> RespostaRegioes:
+        """Risco por subprefeitura com chuva **informada** — para simulação e demonstração.
+
+        A série de ``chuvaHoraria`` vale para todos os pontos, no lugar da chuva real. A resposta
+        vem com ``fonteChuva = "INFORMADA"``; quem exibe deve avisar que é simulação. Sem
+        ``chuvaHoraria``, equivale ao ``GET``.
+        """
+        return request.app.state.preditor.prever_regioes(chuva_horaria=req.chuvaHoraria)
 
     @app.post("/predict/batch", response_model=list[ItemLote], tags=["previsão"],
               responses={413: {"model": ErroResposta}})

@@ -111,8 +111,31 @@ class RegiaoRisco(BaseModel):
     cobertura: str = Field(..., description="COBERTA | SEM_COBERTURA (poucos pontos monitorados)")
 
 
+class RequisicaoRegioes(BaseModel):
+    """Entrada opcional de ``POST /predict/regioes`` — só para simulação/demonstração.
+
+    Com ``chuvaHoraria``, a mesma série de chuva é aplicada a TODOS os pontos monitorados, em
+    vez da chuva real do Open-Meteo. A resposta vem marcada com ``fonteChuva = "INFORMADA"``,
+    e quem exibe precisa avisar que é simulação.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    chuvaHoraria: list[float] | None = Field(
+        None, min_length=72, max_length=240,
+        description="Série horária (mm), a última posição é a hora de referência.",
+    )
+
+    @field_validator("chuvaHoraria")
+    @classmethod
+    def _sem_negativos(cls, valores):
+        if valores is not None and any(v < 0 for v in valores):
+            raise ValueError("chuvaHoraria não aceita valores negativos")
+        return valores
+
+
 class RespostaRegioes(BaseModel):
-    """Saída de ``GET /predict/regioes``: uma linha por subprefeitura, da mais crítica para a menos."""
+    """Saída de ``/predict/regioes``: uma linha por subprefeitura, da mais crítica para a menos."""
 
     geradaEm: str
     validaAte: str
@@ -121,6 +144,8 @@ class RespostaRegioes(BaseModel):
     origem: OrigemPrevisao
     modeloVersao: str
     minPontosRegiao: int = Field(..., description="Abaixo disso a região fica SEM_COBERTURA")
+    fonteChuva: FonteChuva = Field(
+        FonteChuva.OPEN_METEO, description="INFORMADA quando a chuva veio no request (simulação)")
     regioes: list[RegiaoRisco]
     avisos: list[str] = []
 

@@ -130,3 +130,47 @@ def test_sem_limiares_de_regiao_o_alerta_fica_desligado(config_com_modelo, busca
 
     assert resposta.status_code == 503
     assert resposta.json()["codigo"] == "SEM_LIMIARES_REGIAO"
+
+
+FORTE = [0.0] * 66 + [0.5, 2.0, 6.0, 15.0, 25.0, 20.0]
+
+
+def test_regioes_com_chuva_informada_nao_consulta_o_open_meteo(config_regioes, buscador_falso):
+    """Simulação: a série vale para todos os pontos e a resposta sai marcada como INFORMADA."""
+    buscador = buscador_falso(falhar=True)  # se o serviço tentasse buscar chuva real, falharia
+    preditor = Preditor(config_regioes, servico_chuva=ServicoChuva(buscador=buscador))
+    with TestClient(criar_app(preditor)) as cliente:
+        resposta = cliente.post("/predict/regioes", json={"chuvaHoraria": FORTE})
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo["fonteChuva"] == "INFORMADA"
+    assert any("simulação" in aviso for aviso in corpo["avisos"])
+    assert buscador.chamadas == 0
+
+
+def test_chuva_forte_simulada_sobe_o_risco_em_relacao_ao_seco(config_regioes, buscador_falso):
+    preditor = Preditor(config_regioes, servico_chuva=ServicoChuva(buscador=buscador_falso()))
+    with TestClient(criar_app(preditor)) as cliente:
+        seco = cliente.post("/predict/regioes", json={"chuvaHoraria": [0.0] * 72}).json()
+        forte = cliente.post("/predict/regioes", json={"chuvaHoraria": FORTE}).json()
+
+    def maior(corpo):
+        return max(r["probabilidadeMaxima"] for r in corpo["regioes"] if r["probabilidadeMaxima"] is not None)
+
+    assert maior(forte) > maior(seco)
+
+
+def test_get_de_regioes_continua_com_chuva_real(config_regioes, buscador_falso):
+    preditor = Preditor(config_regioes, servico_chuva=ServicoChuva(buscador=buscador_falso([1.0])))
+    with TestClient(criar_app(preditor)) as cliente:
+        corpo = cliente.get("/predict/regioes").json()
+
+    assert corpo["fonteChuva"] == "OPEN_METEO"
+
+
+def test_serie_curta_ou_negativa_e_rejeitada(config_regioes, buscador_falso):
+    preditor = Preditor(config_regioes, servico_chuva=ServicoChuva(buscador=buscador_falso()))
+    with TestClient(criar_app(preditor)) as cliente:
+        assert cliente.post("/predict/regioes", json={"chuvaHoraria": [1.0] * 10}).status_code == 422
+        assert cliente.post("/predict/regioes", json={"chuvaHoraria": [-1.0] * 72}).status_code == 422

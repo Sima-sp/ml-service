@@ -368,6 +368,7 @@ python -m src.train --dataset v1prev --versao v1prev --usar-chuva-prevista     #
 | `POST /predict` | uma previsão |
 | `POST /predict/batch` | lista de requisições → lista de resultados **na mesma ordem**; um item com erro não derruba o lote |
 | `GET /predict/regioes` | risco por subprefeitura (maior risco entre os pontos da região), para o aviso de região do app — ver ADR 0005 |
+| `POST /predict/regioes` | o mesmo, com `chuvaHoraria` informada e aplicada a todos os pontos — só para simulação/demonstração; a resposta sai com `fonteChuva = "INFORMADA"` |
 
 ### Requisição (compatível com o payload antigo)
 

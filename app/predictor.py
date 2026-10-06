@@ -147,12 +147,17 @@ class Preditor:
                                       codigoErro="ERRO_INTERNO"))
         return itens
 
-    def prever_regioes(self, agora: pd.Timestamp | None = None) -> RespostaRegioes:
+    def prever_regioes(self, agora: pd.Timestamp | None = None,
+                       chuva_horaria: list[float] | None = None) -> RespostaRegioes:
         """Risco por subprefeitura: o maior risco entre os pontos monitorados de cada uma.
 
         Serve ao aviso de região do app ("risco elevado na Vila Maria nas próximas 3 h"). O
         modelo é o mesmo dos pontos; muda só a escala em que a resposta é lida — e, nessa
         escala, ele acerta várias vezes mais (ver ``docs/recomendacoes.md``, R18).
+
+        ``chuva_horaria`` (opcional) troca a chuva real por uma série informada, igual para
+        todos os pontos. Existe para a demonstração: num dia seco tudo fica em BAIXO, o que é
+        correto mas não mostra nada. A resposta sai com ``fonteChuva = INFORMADA``.
         """
         agora = agora or agora_utc()
         if self.pontos_regiao.empty:
@@ -162,13 +167,23 @@ class Preditor:
                                "Limiares de região não encontrados para esta versão do modelo", 503)
 
         pontos = self.pontos_regiao
-        coordenadas = list(zip(pontos["lat"], pontos["lon"], strict=True))
-        chuvas = self.servico_chuva.obter(coordenadas)
-
         linhas, probabilidades, avisos, validos = [], [], [], []
         t_ref = None
-        for (_, ponto), chuva in zip(pontos.iterrows(), chuvas, strict=True):
-            if chuva is None or chuva.serie is None:
+
+        if chuva_horaria:
+            fim = hora_referencia(agora)
+            indice = pd.date_range(end=fim, periods=len(chuva_horaria), freq="h")
+            informada = pd.Series(chuva_horaria, index=indice, dtype="float64")
+            series = [informada] * len(pontos)
+            fonte = FonteChuva.INFORMADA
+            avisos.append("chuva informada no request (simulação): a mesma série em todos os pontos")
+        else:
+            coordenadas = list(zip(pontos["lat"], pontos["lon"], strict=True))
+            series = [c.serie if c is not None else None for c in self.servico_chuva.obter(coordenadas)]
+            fonte = FonteChuva.OPEN_METEO
+
+        for (_, ponto), serie in zip(pontos.iterrows(), series, strict=True):
+            if serie is None:
                 continue
             estaticas = {
                 "lat": float(ponto["lat"]), "lon": float(ponto["lon"]),
@@ -178,7 +193,7 @@ class Preditor:
                 "freq_hist_alagamento": float(ponto.get("freq_hist_alagamento", float("nan"))),
             }
             try:
-                linha, t_ref, _ = features_ao_vivo(chuva.serie, agora, estaticas, None)
+                linha, t_ref, _ = features_ao_vivo(serie, agora, estaticas, None)
             except ValueError:
                 continue
             linhas.append(linha)
@@ -225,6 +240,7 @@ class Preditor:
             origem=self.origem,
             modeloVersao=self.modelo_versao,
             minPontosRegiao=MIN_PONTOS_REGIAO,
+            fonteChuva=fonte,
             regioes=regioes,
             avisos=avisos,
         )
