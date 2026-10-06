@@ -1,12 +1,15 @@
 # Serviço de IA do SIMA-SP — imagem de produção (só o necessário para servir).
 # Build:  docker build -t sima-ml-service .
+#         (se o pip não alcançar o PyPI de dentro do build: docker build --network=host ...)
 # Rodar:  docker run --rm -p 5000:5000 sima-ml-service
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_DEFAULT_TIMEOUT=120 \
+    PIP_RETRIES=10
 
 # libgomp1: paralelismo do LightGBM
 RUN apt-get update \
