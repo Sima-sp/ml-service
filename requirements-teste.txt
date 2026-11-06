@@ -1,0 +1,6 @@
+# Só para rodar a suíte de testes (CI e máquina de desenvolvimento), por cima de
+# requirements-servico.lock. Versões iguais às do requirements.lock.
+pytest==9.1.1
+httpx==0.28.1
+beautifulsoup4==4.15.0
+pyarrow==25.0.1
