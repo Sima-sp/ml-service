@@ -1,0 +1,25 @@
+# Atualizações das GitHub Actions e da imagem base, uma vez por semana.
+#
+# As bibliotecas Python ficam de fora de propósito: o modelo (.joblib) só é garantido com as
+# mesmas versões do treino (R14). Atualizar uma biblioteca = treinar de novo e gerar o .lock
+# e o modelo juntos, à mão.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: America/Sao_Paulo
+    groups:
+      actions:
+        patterns: ["*"]
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: America/Sao_Paulo
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]

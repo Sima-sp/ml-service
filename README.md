@@ -463,6 +463,9 @@ Resumo (completo em [`docs/tempo-real.md`](docs/tempo-real.md)):
 make testar            # ou: python -m pytest -v
 ```
 
+Só com o ambiente do serviço: `pip install -r requirements-servico.lock -r requirements-teste.txt`.
+O CI (`.github/workflows/ci.yml`) roda a suíte assim em todo PR e confere o build da imagem Docker.
+
 | Arquivo | Cobre |
 |---|---|
 | `test_features.py` | janelas, NaN em buracos, **sem vazamento**, horário de verão, ao vivo = treino, resumo parcial |
@@ -522,3 +525,11 @@ docker build -t sima-ml-service .  # só a imagem
 | [`docs/integracao-backend.md`](docs/integracao-backend.md) | DTOs Java, tabela `prediction`, agendador, alertas, compose |
 | [`docs/adr/`](docs/adr) | 0001 contrato · 0002 fonte de chuva e tempo · 0003 estratégia de treino · 0004 modo regras |
 | [`DATASET.md`](DATASET.md) | ficha do dataset |
+
+## Como o grupo trabalha
+
+- Ninguém envia direto para a `main`: cada mudança vai numa branch e entra por pull request.
+- O PR só pode ser juntado com o CI passando (job `ci`: a suíte pytest).
+- O merge é sempre *squash* (um commit por PR) e a branch é apagada depois.
+- Mudança no contrato do `/predict` vira uma ADR em `docs/adr/`.
+- O Dependabot cuida só das GitHub Actions e da imagem base. Bibliotecas Python são atualizadas à mão, junto com um novo treino (R14).
